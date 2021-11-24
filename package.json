@@ -6,8 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
-    "start": "node index.js"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "bootstrap": "^5.1.3",
