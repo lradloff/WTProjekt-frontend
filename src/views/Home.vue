@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <img alt="Calculator logo" src="src/assets/logo.png">
+    <img alt="logo" src="src/assets/calclogo.png">
     <HelloWorld msg="Hello World!"/>
   </div>
 </template>
