@@ -2,7 +2,7 @@
   <div v-for="rechnung in rechnungen" :key="rechnung.id">
     <ul class="list-group">
       <li class="list-group-item">ID: {{ rechnung.id }} | {{ rechnung.rechnung }} |
-        {{ rechnung.datum }}</li>
+        Datum: {{ rechnung.datum }}</li>
     </ul>
   </div>
 </template>
