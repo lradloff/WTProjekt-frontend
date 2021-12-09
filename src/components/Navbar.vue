@@ -12,6 +12,7 @@
         <router-link class = "nav-link" to ="/">Home</router-link>
         <router-link class = "nav-link" to ="/about">About</router-link>
         <router-link class = "nav-link" to ="/test">???</router-link>
+          <router-link class = "nav-link" to ="/calculator">Calculator</router-link>
         <ul class="navbar-nav">
         </ul>
       </div>
