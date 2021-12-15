@@ -2,7 +2,7 @@
   <div class = "p-3" style="max-width: 400px; background: #C9BBFF">
 
     <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
-      {{ displayValue || 0 }}
+      {{ screen || 0 }}
     </div>
 
     <div class="row g-0">
@@ -28,28 +28,49 @@ export default {
 
   data() {
     return {
-      displayValue: '',
-      prevValue: 0,
-      latestOperation: '',
+      screen: '',
+      currentValue: '',
+      prevValue: '',
+      latestOperation: null,
       calculatorButtons: ['AC', '?', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
   methods: {
     action(n) {
-      console.log(n);
+      console.log();
 
       if (n === 'AC') {
-        this.prevValue = 0;
-        this.displayValue = '';
+        this.prevValue = '';
+        this.currentValue = '';
+        this.latestOperation = '';
+        this.screen = '';
         return;
       }
 
-      if (n === '+') {
-        this.prevValue += n;
+      if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
+        this.currentValue += `${n}`;
+        this.screen += `${n}`;
+        console.log(`calc: ${this.currentValue}`);
+        console.log(`prev: ${this.prevValue}`);
       }
 
-      this.displayValue += `${n}`;
+      if (n === '+') {
+        if (this.latestOperation === '+') {
+          this.prevValue += parseInt(this.currentValue, 10);
+        } else {
+          this.prevValue = parseInt(this.currentValue, 10);
+        }
+        this.latestOperation = '+';
+        this.screen += `${n}`;
+        this.currentValue = '';
+      }
+
+      if (n === '=') {
+        if (this.latestOperation === '+') {
+          this.screen = this.prevValue + parseInt(this.currentValue, 10);
+        }
+      }
     },
   },
 };
