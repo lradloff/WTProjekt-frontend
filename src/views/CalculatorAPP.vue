@@ -1,23 +1,34 @@
 <template>
+  <div id= "app">
+    <calculator></calculator>
+  </div>
+</template>
+
+<script>
+import Calculator from '../components/Calculator.vue';
+
+export default {
+  name: 'App',
+  components: {
+    Calculator,
+  },
+};
+</script>
+
+<style scoped>
+
+</style>
+
+<!--<template>
   <div v-for="rechnung in rechnungen" :key="rechnung.id">
     <ul class="list-group">
       <li class="list-group-item">ID: {{ rechnung.id }} | {{ rechnung.rechnung }} |
         Datum: {{ rechnung.datum }}</li>
     </ul>
   </div>
-</template>
+</template>-->
 
-<!--<template>-->
-<!--  <ul class="list-group">-->
-
-<!--    <div class="list-group" v-for="rechnung in rechnungen" :key="rechnung.id">-->
-<!--      <li class="list-group-item">{{ rechnung.rechnung }}</li>-->
-<!--    </div>-->
-
-<!--  </ul>-->
-<!--</template>-->
-
-<script>
+<!--<script>
 export default {
   name: 'Calculator',
   data() {
@@ -40,7 +51,7 @@ export default {
       .catch((error) => console.log('error', error));
   },
 };
-</script>
+</script>-->
 
 <style scoped>
 

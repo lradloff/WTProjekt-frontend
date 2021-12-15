@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-    <img alt="logo" src="src/assets/logo.png">
     <HelloWorld msg="Hello World!"/>
   </div>
 </template>

@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import About from '../views/About.vue';
 import Test from '../views/Test.vue';
-import Calculator from '../views/Calculator.vue';
+import Calculator from '../views/CalculatorAPP.vue';
 
 const routes = [
   {
