@@ -33,6 +33,7 @@ export default {
       currentValue: '',
       prevValue: '',
       latestOperation: null,
+      latestButton: '',
       calculatorButtons: ['AC', '?', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
@@ -46,12 +47,14 @@ export default {
         this.currentValue = '';
         this.latestOperation = '';
         this.screen = '';
+        this.latestButton = '';
         return;
       }
 
       if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
         this.currentValue += `${n}`;
         this.screen += `${n}`;
+        this.latestButton = n;
       }
 
       if (['+', '-', '*', '/'].includes(n)) {
