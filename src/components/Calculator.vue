@@ -58,20 +58,26 @@ export default {
       }
 
       if (['+', '-', '*', '/'].includes(n)) {
-        if (this.latestOperation === '/') {
-          this.prevValue /= parseInt(this.currentValue, 10);
-        } else if (this.latestOperation === '-') {
-          this.prevValue -= parseInt(this.currentValue, 10);
-        } else if (this.latestOperation === '+') {
-          this.prevValue += parseInt(this.currentValue, 10);
-        } else if (this.latestOperation === '*') {
-          this.prevValue *= parseInt(this.currentValue, 10);
+        if (['+', '-', '*', '/'].includes(this.latestButton)) {
+          this.screen = this.screen.substring(0, this.screen.length - 1) + n;
+          this.latestOperation = n;
         } else {
-          this.prevValue = parseInt(this.currentValue, 10);
+          if (this.latestOperation === '/') {
+            this.prevValue /= parseInt(this.currentValue, 10);
+          } else if (this.latestOperation === '-') {
+            this.prevValue -= parseInt(this.currentValue, 10);
+          } else if (this.latestOperation === '+') {
+            this.prevValue += parseInt(this.currentValue, 10);
+          } else if (this.latestOperation === '*') {
+            this.prevValue *= parseInt(this.currentValue, 10);
+          } else {
+            this.prevValue = parseInt(this.currentValue, 10);
+          }
+          this.latestOperation = n;
+          this.screen += `${n}`;
+          this.currentValue = '';
+          this.latestButton = n;
         }
-        this.latestOperation = n;
-        this.screen += `${n}`;
-        this.currentValue = '';
       }
 
       /*  if (n === '+') {
@@ -155,6 +161,7 @@ export default {
       console.log(`prevValue: ${this.prevValue}`);
       console.log(`latestOperation: ${this.latestOperation}`);
       console.log(`screen: ${this.screen}`);
+      console.log(`latestButton: ${this.latestButton}`);
     },
   },
 };
