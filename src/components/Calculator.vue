@@ -54,11 +54,30 @@ export default {
         this.screen += `${n}`;
       }
 
-      if (n === '+') {
+      if (['+', '-', '*', '/'].includes(n)) {
+        if (this.latestOperation === '/') {
+          this.prevValue /= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '-') {
+          this.prevValue -= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '+') {
+          this.prevValue += parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '*') {
+          this.prevValue *= parseInt(this.currentValue, 10);
+        } else {
+          this.prevValue = parseInt(this.currentValue, 10);
+        }
+        this.latestOperation = n;
+        this.screen += `${n}`;
+        this.currentValue = '';
+      }
+
+      /*  if (n === '+') {
         if (this.latestOperation === '+') {
           this.prevValue += parseInt(this.currentValue, 10);
         } else if (this.latestOperation === '-') {
           this.prevValue -= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '*') {
+          this.prevValue *= parseInt(this.currentValue, 10);
         } else {
           this.prevValue = parseInt(this.currentValue, 10);
         }
@@ -72,6 +91,8 @@ export default {
           this.prevValue -= parseInt(this.currentValue, 10);
         } else if (this.latestOperation === '+') {
           this.prevValue += parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '*') {
+          this.prevValue *= parseInt(this.currentValue, 10);
         } else {
           this.prevValue = parseInt(this.currentValue, 10);
         }
@@ -80,12 +101,50 @@ export default {
         this.currentValue = '';
       }
 
+      if (n === '*') {
+        if (this.latestOperation === '*') {
+          this.prevValue *= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '-') {
+          this.prevValue -= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '+') {
+          this.prevValue += parseInt(this.currentValue, 10);
+        } else {
+          this.prevValue = parseInt(this.currentValue, 10);
+        }
+        this.latestOperation = '*';
+        this.screen += `${n}`;
+        this.currentValue = '';
+      }
+
+      if (n === '/') {
+        if (this.latestOperation === '/') {
+          this.prevValue /= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '-') {
+          this.prevValue -= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '+') {
+          this.prevValue += parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '*') {
+          this.prevValue *= parseInt(this.currentValue, 10);
+        } else {
+          this.prevValue = parseInt(this.currentValue, 10);
+        }
+        this.latestOperation = '*';
+        this.screen += `${n}`;
+        this.currentValue = '';
+      } */
+
       if (n === '=') {
         if (this.latestOperation === '+') {
           this.screen = this.prevValue + parseInt(this.currentValue, 10);
         }
         if (this.latestOperation === '-') {
           this.screen = this.prevValue - parseInt(this.currentValue, 10);
+        }
+        if (this.latestOperation === '*') {
+          this.screen = this.prevValue * parseInt(this.currentValue, 10);
+        }
+        if (this.latestOperation === '/') {
+          this.screen = this.prevValue / parseInt(this.currentValue, 10);
         }
       }
 
