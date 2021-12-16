@@ -1,5 +1,6 @@
 <template>
-  <div class = "p-3" style="max-width: 400px; background: #C9BBFF">
+  <div class = "p-3" style="max-width: 400px; margin: 0 auto; margin-top: 100px;
+  background: #C9BBFF">
 
     <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
       {{ screen || 0 }}
@@ -51,13 +52,13 @@ export default {
       if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
         this.currentValue += `${n}`;
         this.screen += `${n}`;
-        console.log(`calc: ${this.currentValue}`);
-        console.log(`prev: ${this.prevValue}`);
       }
 
       if (n === '+') {
         if (this.latestOperation === '+') {
           this.prevValue += parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '-') {
+          this.prevValue -= parseInt(this.currentValue, 10);
         } else {
           this.prevValue = parseInt(this.currentValue, 10);
         }
@@ -66,11 +67,32 @@ export default {
         this.currentValue = '';
       }
 
+      if (n === '-') {
+        if (this.latestOperation === '-') {
+          this.prevValue -= parseInt(this.currentValue, 10);
+        } else if (this.latestOperation === '+') {
+          this.prevValue += parseInt(this.currentValue, 10);
+        } else {
+          this.prevValue = parseInt(this.currentValue, 10);
+        }
+        this.latestOperation = '-';
+        this.screen += `${n}`;
+        this.currentValue = '';
+      }
+
       if (n === '=') {
         if (this.latestOperation === '+') {
           this.screen = this.prevValue + parseInt(this.currentValue, 10);
         }
+        if (this.latestOperation === '-') {
+          this.screen = this.prevValue - parseInt(this.currentValue, 10);
+        }
       }
+
+      console.log(`currentValue: ${this.currentValue}`);
+      console.log(`prevValue: ${this.prevValue}`);
+      console.log(`latestOperation: ${this.latestOperation}`);
+      console.log(`screen: ${this.screen}`);
     },
   },
 };
