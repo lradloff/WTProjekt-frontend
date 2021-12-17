@@ -15,9 +15,8 @@
           <div class="row g-0">
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
-                   :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var(post)','=']
-                   .includes(n)}" @click="action(n)"
-              >
+                   :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var','=']
+                   .includes(n)}" @click="action(n)">
                 {{ n }}
               </div>
             </div>
@@ -31,8 +30,8 @@
         <ul class="list-group">
           <li class="list-group-item" v-for="rechnung in rechnungen" :key="rechnung.id"
               v-on:click="updateHistory">
-            ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} ||| Datum: {{ rechnung.datum }} |||
-            Ergebnis: {{ rechnung.ergebnis }}
+            ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
+            ||| {{ rechnung.datum }}
           </li>
         </ul>
       </div>
@@ -56,9 +55,11 @@ export default {
   },
 
   data() {
+    const today = new Date();
     return {
       rechnungen: [],
 
+      datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`,
       screen: '',
       currentValue: '',
       prevValue: '',
@@ -66,7 +67,8 @@ export default {
       latestButton: '',
       equalsPressed: true,
       dotPressed: false,
-      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var(post)', 0, '.', '='],
+      rechenString: '',
+      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
@@ -142,6 +144,7 @@ export default {
       }
 
       if (n === '=') {
+        this.rechenString = this.screen;
         if (this.latestOperation === '+') {
           this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
         }
@@ -154,26 +157,30 @@ export default {
         if (this.latestOperation === '/') {
           this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
         }
-        if (this.screen.startsWith('.')) {
+        if (this.screen.startsWith('.') && this.screen.length > 1) {
           this.screen = `0${this.screen}`;
         }
         this.equalsPressed = true;
         this.dotPressed = false;
-        if (this.screen === 'NaN') {
+        if (this.screen === 'NaN' || this.screen === '.') {
+          this.clear();
           this.screen = 'ERROR';
+        } else {
+          this.post();
+          setTimeout(this.updateHistory, 200);
         }
       }
-      if (n === '%') {
-        this.post();
-        setTimeout(this.updateHistory, 200);
-      }
 
+      if (n === '%') {
+        return;
+      }
       console.log(`currentValue: ${this.currentValue}`);
       console.log(`prevValue: ${this.prevValue}`);
-      console.log(`latestOperation: ${this.latestOperation}`);
-      console.log(`screen: ${this.screen}`);
-      console.log(`latestButton: ${this.latestButton}`);
-      console.log(typeof this.screen);
+      console.log(`latesOperation: ${typeof this.latestOperation}`);
+      console.log(`screen: ${typeof this.screen}`);
+      console.log(`rechenString: ${typeof this.rechenString}`);
+      console.log((parseFloat('0.03') + parseFloat('0.06')).toFixed(2));
+      console.log((parseFloat('0.00003') + parseFloat('0.03')).toFixed(5));
     },
 
     clear() {
@@ -184,10 +191,11 @@ export default {
       this.latestButton = '';
       this.equalsPressed = true;
       this.dotPressed = false;
+      this.rechenString = '';
     },
 
     post() {
-      const data = { rechnung: '1+1', datum: '2021-03-03' };
+      const data = { rechnung: this.rechenString, datum: this.datum, ergebnis: this.screen };
       const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;
       const requestOptions = {
         method: 'POST',
@@ -198,8 +206,8 @@ export default {
       };
 
       fetch(endpoint, requestOptions)
-        .then((response) => response.json())
-        .catch((error) => console.log('error', error));
+        .then((text) => { console.log(text); })
+        .catch((error) => console.log('Error:', error));
     },
 
     updateHistory() {
@@ -215,7 +223,7 @@ export default {
         .then((result) => result.forEach((rechnung) => {
           this.rechnungen.push(rechnung);
         }))
-        .catch((error) => console.log('error', error));
+        .catch((error) => console.log('Error:', error));
     },
 
   },
