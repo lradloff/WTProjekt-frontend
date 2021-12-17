@@ -4,13 +4,6 @@
     <calculator></calculator>
   </div>
 
-  <div v-for="rechnung in rechnungen" :key="rechnung.id">
-    <ul class="list-group">
-      <li class="list-group-item">ID: {{ rechnung.id }} | {{ rechnung.rechnung }} |
-        Datum: {{ rechnung.datum }}</li>
-    </ul>
-  </div>
-
 </template>
 
 <script>
@@ -21,31 +14,21 @@ export default {
   components: {
     Calculator,
   },
-  data() {
-    return {
-      rechnungen: [],
-    };
-  },
-  mounted() {
-    const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;
-    const requestOptions = {
-      method: 'GET',
-      redirect: 'follow',
-    };
-
-    fetch(endpoint, requestOptions)
-      .then((response) => response.json())
-      .then((result) => result.forEach((rechnung) => {
-        this.rechnungen.push(rechnung);
-      }))
-      .catch((error) => console.log('error', error));
-  },
 };
 </script>
 
 <style scoped>
 
 </style>
+
+<!--
+        <div v-for="rechnung in rechnungen" :key="rechnung.id">
+          <ul class="list-group">
+            <li class="list-group-item">ID: {{ rechnung.id }} | {{ rechnung.rechnung }} |
+              Datum: {{ rechnung.datum }}</li>
+          </ul>
+        </div>
+-->
 
 <!--
 <<template>
