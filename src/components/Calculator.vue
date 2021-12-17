@@ -9,14 +9,14 @@
   background: #C9BBFF">
 
           <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
-            {{ screen || 0 }}
+            {{ screen || '-' }}
           </div>
 
           <div class="row g-0">
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
-                   :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var','='].includes(n)}"
-                   @click="action(n)"
+                   :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var(post)','=']
+                   .includes(n)}" @click="action(n)"
               >
                 {{ n }}
               </div>
@@ -27,9 +27,10 @@
 
       </div>
 
-      <div class = "col" style="margin-top: 100px">
+      <div class = "col" style="margin-top: 100px;">
         <ul class="list-group">
-          <li class="list-group-item" v-for="rechnung in rechnungen" :key="rechnung.id">
+          <li class="list-group-item" v-for="rechnung in rechnungen" :key="rechnung.id"
+              v-on:click="updateHistory">
             ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} ||| Datum: {{ rechnung.datum }} |||
             Ergebnis: {{ rechnung.ergebnis }}
           </li>
@@ -64,7 +65,8 @@ export default {
       latestOperation: null,
       latestButton: '',
       equalsPressed: true,
-      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
+      dotPressed: false,
+      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var(post)', 0, '.', '='],
     };
   },
 
@@ -81,70 +83,89 @@ export default {
           this.clear();
           return;
         }
-        if (!(this.screen.endsWith('+') || this.screen.endsWith('-') || this.screen.endsWith('*') || this.screen.endsWith('/'))) {
+        if (!(['+', '-', '*', '/'].includes(this.screen.slice(-1)))) {
+          if (this.screen.slice(-1) === '.') {
+            this.dotPressed = false;
+          }
           this.screen = this.screen.substring(0, this.screen.length - 1);
           this.currentValue = this.currentValue.substring(0, this.currentValue.length - 1);
         }
       }
 
       if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
-        if (!((this.latestButton === '.') && (n === '.'))) {
-          if (this.equalsPressed) {
-            if (n === '.') {
-              return;
-            }
-            this.clear();
-            this.equalsPressed = false;
-          }
-          this.currentValue += `${n}`;
-          this.screen += `${n}`;
-          this.latestButton = n;
+        if (this.equalsPressed) {
+          this.clear();
+          this.equalsPressed = false;
         }
+        if (n === '.') {
+          if (this.dotPressed) {
+            return;
+          }
+          this.dotPressed = true;
+        }
+        this.currentValue += `${n}`;
+        this.screen += `${n}`;
+        this.latestButton = n;
       }
 
       if (['+', '-', '*', '/'].includes(n)) {
+        if (this.screen === 'ERROR' || this.screen === '') {
+          this.clear();
+          return;
+        }
         if (['+', '-', '*', '/'].includes(this.latestButton)) {
           this.screen = this.screen.substring(0, this.screen.length - 1) + n;
           this.latestOperation = n;
         } else {
           if (this.latestOperation === '/') {
-            this.prevValue /= parseFloat(this.currentValue);
+            this.prevValue = (parseFloat(this.prevValue) / parseFloat(this.currentValue))
+              .toString();
           } else if (this.latestOperation === '-') {
-            this.prevValue -= parseFloat(this.currentValue);
+            this.prevValue = (parseFloat(this.prevValue) - parseFloat(this.currentValue))
+              .toString();
           } else if (this.latestOperation === '+') {
-            this.prevValue += parseFloat(this.currentValue);
+            this.prevValue = (parseFloat(this.prevValue) + parseFloat(this.currentValue))
+              .toString();
           } else if (this.latestOperation === '*') {
-            this.prevValue *= parseFloat(this.currentValue);
+            this.prevValue = (parseFloat(this.prevValue) * parseFloat(this.currentValue))
+              .toString();
           } else {
-            this.prevValue = parseFloat(this.currentValue);
+            this.prevValue = parseFloat(this.currentValue).toString();
           }
           this.latestOperation = n;
           this.screen += `${n}`;
           this.currentValue = '';
           this.latestButton = n;
           this.equalsPressed = false;
+          this.dotPressed = false;
         }
       }
 
       if (n === '=') {
         if (this.latestOperation === '+') {
-          this.screen = (this.prevValue + parseFloat(this.currentValue)).toString();
+          this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
         }
         if (this.latestOperation === '-') {
-          this.screen = (this.prevValue - parseFloat(this.currentValue)).toString();
+          this.screen = (parseFloat(this.prevValue) - parseFloat(this.currentValue)).toString();
         }
         if (this.latestOperation === '*') {
-          this.screen = (this.prevValue * parseFloat(this.currentValue)).toString();
+          this.screen = (parseFloat(this.prevValue) * parseFloat(this.currentValue)).toString();
         }
         if (this.latestOperation === '/') {
-          this.screen = (this.prevValue / parseFloat(this.currentValue)).toString();
+          this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
+        }
+        if (this.screen.startsWith('.')) {
+          this.screen = `0${this.screen}`;
         }
         this.equalsPressed = true;
+        this.dotPressed = false;
+        if (this.screen === 'NaN') {
+          this.screen = 'ERROR';
+        }
       }
-
       if (n === '%') {
         this.post();
-        setTimeout(this.updateHistory, 100);
+        setTimeout(this.updateHistory, 200);
       }
 
       console.log(`currentValue: ${this.currentValue}`);
@@ -152,6 +173,7 @@ export default {
       console.log(`latestOperation: ${this.latestOperation}`);
       console.log(`screen: ${this.screen}`);
       console.log(`latestButton: ${this.latestButton}`);
+      console.log(typeof this.screen);
     },
 
     clear() {
@@ -161,6 +183,7 @@ export default {
       this.screen = '';
       this.latestButton = '';
       this.equalsPressed = true;
+      this.dotPressed = false;
     },
 
     post() {
@@ -201,8 +224,8 @@ export default {
 
 <style scoped>
 .list-group{
-  max-height: 469px;
-  overflow:scroll;
+  max-height: 452px;
+  overflow-y:scroll;
 }
 .bg-light-purple {
   background: #E6DFFF;
@@ -213,5 +236,8 @@ export default {
 }
 .bg-dark-purple {
   background: #A696EC;
+}
+.container {
+  user-select: none;
 }
 </style>
