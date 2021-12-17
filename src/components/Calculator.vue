@@ -9,7 +9,7 @@
     <div class="row g-0">
       <div class="col-3" v-for="n in calculatorButtons" :key="n">
         <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
-             :class="{'bg-dark-purple': ['AC','?','%','/','*','-','+','var','='].includes(n)}"
+             :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var','='].includes(n)}"
              @click="action(n)"
         >
           {{ n }}
@@ -35,7 +35,7 @@ export default {
       latestOperation: null,
       latestButton: '',
       equalsPressed: true,
-      calculatorButtons: ['AC', '?', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
+      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
@@ -46,7 +46,7 @@ export default {
         return;
       }
 
-      if (n === '?') {
+      if (n === '⌫') {
         if (this.screen.length === 1 || this.equalsPressed) {
           this.clear();
           return;
