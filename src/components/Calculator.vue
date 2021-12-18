@@ -6,7 +6,7 @@
       <div class="col">
 
         <div class = "p-3" style="max-width: 400px; margin: 0 auto; margin-top: 100px;
-  background: #C9BBFF">
+        background: #C9BBFF">
 
           <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
             {{ screen || '-' }}
@@ -16,7 +16,7 @@
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
                    :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var','=']
-                   .includes(n)}" @click="action(n)">
+                   .includes(n)}" @click="buttonPress(n)">
                 {{ n }}
               </div>
             </div>
@@ -28,8 +28,9 @@
 
       <div class = "col" style="margin-top: 100px;">
         <ul class="list-group">
-          <li class="list-group-item" v-for="rechnung in rechnungen" :key="rechnung.id"
-              v-on:click="updateHistory">
+          <li class="list-group-item hover bg-light-light-purple" v-for="rechnung in rechnungen"
+              :key="rechnung.id"
+              v-on:click="selectCalc(rechnung.id)">
             ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
             ||| {{ rechnung.datum }}
           </li>
@@ -37,6 +38,15 @@
       </div>
 
     </div>
+
+    <button style="background: #E6DFFF; margin-left: 900px; height: 50px; width: 200px"
+            v-on:click="fullDeleteHistory()">
+      DELETE ALL
+    </button>
+    <button style="background: #E6DFFF; margin-left: 900px; height: 50px; width: 200px"
+            v-on:click="updateHistory">
+      REFRESH
+    </button>
 
   </div>
 
@@ -59,7 +69,8 @@ export default {
     return {
       rechnungen: [],
 
-      datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}`,
+      datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}
+      ${(`0${today.getHours()}`).slice(-2)}:${today.getMinutes()}:${today.getSeconds()}`,
       screen: '',
       currentValue: '',
       prevValue: '',
@@ -68,13 +79,26 @@ export default {
       equalsPressed: true,
       dotPressed: false,
       rechenString: '',
+      selectCalcPressed: false,
+
       calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
   methods: {
 
-    action(n) {
+    selectCalc(dbid) {
+      this.selectCalcPressed = true;
+      const index = this.rechnungen.findIndex((element) => element.id === dbid);
+      this.clear();
+      this.screen = this.rechnungen[index].rechnung;
+      this.prevValue = this.rechnungen[index].ergebnis;
+      this.currentValue = this.rechnungen[index].ergebnis;
+      console.log(`prev: ${this.prevValue}`);
+      console.log(`curr: ${this.currentValue}`);
+    },
+
+    buttonPress(n) {
       if (n === 'AC') {
         this.clear();
         return;
@@ -95,6 +119,9 @@ export default {
       }
 
       if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
+        if (this.selectCalcPressed) {
+          this.selectCalcPressed = false;
+        }
         if (this.equalsPressed) {
           this.clear();
           this.equalsPressed = false;
@@ -119,6 +146,7 @@ export default {
           this.screen = this.screen.substring(0, this.screen.length - 1) + n;
           this.latestOperation = n;
         } else {
+          this.selectCalcPressed = false;
           if (this.latestOperation === '/') {
             this.prevValue = (parseFloat(this.prevValue) / parseFloat(this.currentValue))
               .toString();
@@ -145,6 +173,15 @@ export default {
 
       if (n === '=') {
         this.rechenString = this.screen;
+        if (this.selectCalcPressed) {
+          this.screen = this.prevValue;
+          this.selectCalcPressed = false;
+          this.equalsPressed = true;
+          this.dotPressed = false;
+          console.log(`prev: ${this.prevValue}`);
+          console.log(`curr: ${this.currentValue}`);
+          return;
+        }
         if (this.latestOperation === '+') {
           this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
         }
@@ -162,7 +199,7 @@ export default {
         }
         this.equalsPressed = true;
         this.dotPressed = false;
-        if (this.screen === 'NaN' || this.screen === '.') {
+        if (this.screen === 'NaN' || this.screen === '.' || this.screen === '' || this.screen === 'ERROR') {
           this.clear();
           this.screen = 'ERROR';
         } else {
@@ -170,17 +207,6 @@ export default {
           setTimeout(this.updateHistory, 200);
         }
       }
-
-      if (n === '%') {
-        return;
-      }
-      console.log(`currentValue: ${this.currentValue}`);
-      console.log(`prevValue: ${this.prevValue}`);
-      console.log(`latesOperation: ${typeof this.latestOperation}`);
-      console.log(`screen: ${typeof this.screen}`);
-      console.log(`rechenString: ${typeof this.rechenString}`);
-      console.log((parseFloat('0.03') + parseFloat('0.06')).toFixed(2));
-      console.log((parseFloat('0.00003') + parseFloat('0.03')).toFixed(5));
     },
 
     clear() {
@@ -226,6 +252,20 @@ export default {
         .catch((error) => console.log('Error:', error));
     },
 
+    fullDeleteHistory() {
+      for (let i = 0; i < this.rechnungen.length; i += 1) {
+        const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen/${this.rechnungen[i].id}`;
+        const requestOptions = {
+          method: 'DELETE',
+        };
+
+        fetch(endpoint, requestOptions)
+          .then((text) => { console.log(text); })
+          .catch((error) => console.log('Error:', error));
+      }
+      setTimeout(this.updateHistory, 1000);
+    },
+
   },
 };
 </script>
@@ -237,6 +277,9 @@ export default {
 }
 .bg-light-purple {
   background: #E6DFFF;
+}
+.bg-light-light-purple {
+  background: #F4F1FF;
 }
 .hover:hover {
   cursor: pointer;
