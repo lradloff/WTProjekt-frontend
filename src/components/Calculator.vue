@@ -204,7 +204,7 @@ export default {
           this.screen = 'ERROR';
         } else {
           this.post();
-          setTimeout(this.updateHistory, 200);
+          setTimeout(this.updateHistory, 300);
         }
       }
     },
