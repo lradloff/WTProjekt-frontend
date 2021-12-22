@@ -112,6 +112,11 @@ export default {
           return;
         }
         if (!(['+', '-', '*', '/'].includes(this.screen.slice(-1)))) {
+          if (this.latestButton === 'ans') {
+            this.screen = this.screen.substring(0, this.screen.length - 2);
+            this.currentValue = '';
+            this.latestButton = '';
+          }
           if (this.screen.slice(-1) === '.') {
             this.dotPressed = false;
           }
@@ -292,7 +297,7 @@ export default {
           .then((text) => { console.log(text); })
           .catch((error) => console.log('Error:', error));
       }
-      setTimeout(this.updateHistory, 2000);
+      this.rechnungen = [];
     },
   },
 };
