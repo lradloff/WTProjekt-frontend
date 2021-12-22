@@ -9,13 +9,13 @@
         background: #C9BBFF">
 
           <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
-            {{ screen || '-' }}
+            {{ screen || '--' }}
           </div>
 
           <div class="row g-0">
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
-                   :class="{'bg-dark-purple': ['AC','⌫','+/-','/','*','-','+','var','=']
+                   :class="{'bg-dark-purple': ['AC','⌫','ans','/','*','-','+','var','=']
                    .includes(n)}" @click="buttonPress(n)">
                 {{ n }}
               </div>
@@ -27,11 +27,12 @@
       </div>
 
       <div class = "col" style="margin-top: 170px">
-        <button class="rounded" style="background: #E6DFFF; height: 30px; width: 350px;"
+        <button type="button" class="btn btn-light" style="background: #E6DFFF;height: 30px;
+         width: 350px;"
                 v-on:click="updateHistory()">
           Refresh
         </button>
-        <button type="button" class="btn btn-light rounded" style="background: #E6DFFF;height: 30px;
+        <button type="button" class="btn btn-light" style="background: #E6DFFF;height: 30px;
          width: 350px;"
                 v-on:click="fullDeleteHistory()">
           Clear History
@@ -80,8 +81,9 @@ export default {
       dotPressed: false,
       rechenString: '',
       selectCalcPressed: false,
+      prevResult: '',
 
-      calculatorButtons: ['AC', '⌫', '+/-', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
+      calculatorButtons: ['AC', '⌫', 'ans', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
@@ -132,6 +134,9 @@ export default {
           }
           this.dotPressed = true;
         }
+        if (this.latestButton === 'ans') {
+          return;
+        }
         this.currentValue += `${n}`;
         this.screen += `${n}`;
         this.latestButton = n;
@@ -171,6 +176,20 @@ export default {
         }
       }
 
+      if (n === 'ans') {
+        if (this.prevResult !== '' && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(this.latestButton))) {
+          if (this.equalsPressed) {
+            this.clear();
+          }
+          if (this.latestButton === '.') {
+            return;
+          }
+          this.screen += 'ans';
+          this.currentValue = this.prevResult;
+          this.latestButton = n;
+        }
+      }
+
       if (n === '=') {
         this.rechenString = this.screen;
         if (this.selectCalcPressed) {
@@ -199,14 +218,24 @@ export default {
         }
         this.equalsPressed = true;
         this.dotPressed = false;
-        if (this.screen === 'NaN' || this.screen === '.' || this.screen === '' || this.screen === 'ERROR') {
+        if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR') {
           this.clear();
           this.screen = 'ERROR';
+        } else if (this.screen === '') {
+          return;
+        } else if (this.latestButton === 'ans' && this.screen === 'ans') {
+          this.screen = this.prevResult;
         } else {
+          this.prevResult = this.screen;
           this.post();
           setTimeout(this.updateHistory, 300);
         }
       }
+
+      console.log(`screen: ${this.screen}`);
+      console.log(`curr: ${this.currentValue}`);
+      console.log(`prevV: ${this.prevValue}`);
+      console.log(`prevR: ${this.prevResult}`);
     },
 
     clear() {
@@ -263,7 +292,7 @@ export default {
           .then((text) => { console.log(text); })
           .catch((error) => console.log('Error:', error));
       }
-      setTimeout(this.updateHistory, 1000);
+      setTimeout(this.updateHistory, 1200);
     },
   },
 };
