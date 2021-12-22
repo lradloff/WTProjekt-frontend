@@ -6,6 +6,6 @@ module.exports = {
   automock: false,
   resetMocks: false,
   setupFiles: [
-    './setupJest.js'
+    'setupJest.js'
   ]
 };
