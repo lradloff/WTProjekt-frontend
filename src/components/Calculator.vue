@@ -292,7 +292,7 @@ export default {
           .then((text) => { console.log(text); })
           .catch((error) => console.log('Error:', error));
       }
-      setTimeout(this.updateHistory, 1200);
+      setTimeout(this.updateHistory, 2000);
     },
   },
 };
