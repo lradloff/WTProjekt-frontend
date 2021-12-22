@@ -265,7 +265,6 @@ export default {
       }
       setTimeout(this.updateHistory, 1000);
     },
-
   },
 };
 </script>
