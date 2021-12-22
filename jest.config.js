@@ -3,4 +3,9 @@ module.exports = {
   transform: {
     '^.+\\.vue$': 'vue-jest',
   },
+  automock: false,
+  resetMocks: false,
+  setupFiles: [
+    './setupJest.js'
+  ]
 };
