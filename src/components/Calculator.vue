@@ -1,11 +1,11 @@
 <template>
-  <div class="container">
+  <div class="container-fluid" style="background: #A696EC">
 
     <div class="row">
 
-      <div class="col">
+      <div class="col" style="margin-top: 200px">
 
-        <div class = "p-3" style="max-width: 400px; margin: 0 auto; margin-top: 100px;
+        <div class = "p-3" style="max-width: 400px; margin: 0 auto;
         background: #C9BBFF">
 
           <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
@@ -15,7 +15,7 @@
           <div class="row g-0">
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
-                   :class="{'bg-dark-purple': ['AC','⌫','%','/','*','-','+','var','=']
+                   :class="{'bg-dark-purple': ['AC','⌫','+/-','/','*','-','+','var','=']
                    .includes(n)}" @click="buttonPress(n)">
                 {{ n }}
               </div>
@@ -26,9 +26,18 @@
 
       </div>
 
-      <div class = "col" style="margin-top: 100px;">
-        <ul class="list-group">
-          <li class="list-group-item hover bg-light-light-purple" v-for="rechnung in rechnungen"
+      <div class = "col" style="margin-top: 170px">
+        <button class="rounded" style="background: #E6DFFF; height: 30px; width: 350px;"
+                v-on:click="updateHistory()">
+          Refresh
+        </button>
+        <button type="button" class="btn btn-light rounded" style="background: #E6DFFF;height: 30px;
+         width: 350px;"
+                v-on:click="fullDeleteHistory()">
+          Clear History
+        </button>
+        <ul class="list-group" style="max-width: 700px">
+          <li class="list-group-item hover" v-for="rechnung in rechnungen"
               :key="rechnung.id"
               v-on:click="selectCalc(rechnung.id)">
             ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
@@ -38,15 +47,6 @@
       </div>
 
     </div>
-
-    <button style="background: #E6DFFF; margin-left: 900px; height: 50px; width: 200px"
-            v-on:click="fullDeleteHistory()">
-      DELETE ALL
-    </button>
-    <button style="background: #E6DFFF; margin-left: 900px; height: 50px; width: 200px"
-            v-on:click="updateHistory">
-      REFRESH
-    </button>
 
   </div>
 
@@ -70,7 +70,7 @@ export default {
       rechnungen: [],
 
       datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}
-      ${(`0${today.getHours()}`).slice(-2)}:${today.getMinutes()}:${today.getSeconds()}`,
+      ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`,
       screen: '',
       currentValue: '',
       prevValue: '',
@@ -81,7 +81,7 @@ export default {
       rechenString: '',
       selectCalcPressed: false,
 
-      calculatorButtons: ['AC', '⌫', '%', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
+      calculatorButtons: ['AC', '⌫', '+/-', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
@@ -247,7 +247,7 @@ export default {
       fetch(endpoint, requestOptions)
         .then((response) => response.json())
         .then((result) => result.forEach((rechnung) => {
-          this.rechnungen.push(rechnung);
+          this.rechnungen.unshift(rechnung);
         }))
         .catch((error) => console.log('Error:', error));
     },
@@ -278,9 +278,6 @@ export default {
 .bg-light-purple {
   background: #E6DFFF;
 }
-.bg-light-light-purple {
-  background: #F4F1FF;
-}
 .hover:hover {
   cursor: pointer;
   background: #F4F1FF;
@@ -288,7 +285,8 @@ export default {
 .bg-dark-purple {
   background: #A696EC;
 }
-.container {
+.container-fluid {
   user-select: none;
+  height: calc(100vh - 56px);
 }
 </style>

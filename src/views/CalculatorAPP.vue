@@ -1,8 +1,6 @@
 <template>
 
-  <div id= "app" style="background: #E6DFFF">
-    <calculator></calculator>
-  </div>
+  <calculator></calculator>
 
 </template>
 
@@ -18,5 +16,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
