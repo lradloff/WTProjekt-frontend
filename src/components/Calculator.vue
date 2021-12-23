@@ -12,6 +12,7 @@
             {{ screen || '--' }}
           </div>
 
+          <!-- Layout inspired by https://www.youtube.com/watch?v=SLk0lfUX3PY -->
           <div class="row g-0">
             <div class="col-3" v-for="n in calculatorButtons" :key="n">
               <div class="lead text-black text-center m-1 py-3 bg-light-purple rounded hover"
@@ -26,16 +27,16 @@
 
       </div>
 
-      <div class = "col" style="margin-top: 170px">
-        <button type="button" class="btn btn-light" style="background: #E6DFFF;height: 30px;
-         width: 350px;"
+      <div class = "col" style="margin-top: 160px">
+        <button type="button" class="btn btn-light" style="background: #B9FFD2;
+        height: 40px; width: 50px; font-size: larger; margin-left: 600px"
                 v-on:click="updateHistory()">
-          Refresh
+          ↻
         </button>
-        <button type="button" class="btn btn-light" style="background: #E6DFFF;height: 30px;
-         width: 350px;"
+        <button type="button" class="btn btn-light" style="background: lightcoral;
+        height: 40px; width: 50px"
                 v-on:click="fullDeleteHistory()">
-          Clear History
+          🗑
         </button>
         <ul class="list-group" style="max-width: 700px">
           <li class="list-group-item hover" v-for="rechnung in rechnungen"
@@ -255,7 +256,17 @@ export default {
     },
 
     post() {
-      const data = { rechnung: this.rechenString, datum: this.datum, ergebnis: this.screen };
+      const today = new Date();
+      // Leading Zeros fix by: https://stackoverflow.com/questions/8935414/getminutes-0-9-how-to-display-two-digit-numbers
+      const hours = `0${today.getHours()}`.slice(-2);
+      const minutes = `0${today.getMinutes()}`.slice(-2);
+      const seconds = `0${today.getSeconds()}`.slice(-2);
+      const data = {
+        rechnung: this.rechenString,
+        datum: `${today.getDate()}.${today.getMonth() + 1}.
+        ${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
+        ergebnis: this.screen,
+      };
       const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;
       const requestOptions = {
         method: 'POST',
