@@ -44,8 +44,8 @@
             <li class="list-group-item hover" v-for="rechnung in rechnungen"
                 :key="rechnung.id"
                 v-on:click="selectCalc(rechnung.id)">
-              ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
-              ||| {{ rechnung.datum }}
+              ID: {{ rechnung.id }} ▎ {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
+              ▎ {{ rechnung.datum }}
             </li>
           </ul>
         </div>
@@ -266,8 +266,7 @@ export default {
       const seconds = `0${today.getSeconds()}`.slice(-2);
       const data = {
         rechnung: this.rechenString,
-        datum: `${today.getDate()}.${today.getMonth() + 1}.
-        ${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
+        datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
         ergebnis: this.screen,
       };
       const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;
