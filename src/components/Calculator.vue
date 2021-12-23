@@ -5,10 +5,10 @@
 
       <div class="col" style="margin-top: 200px">
 
-        <div class = "p-3" style="max-width: 400px; margin: 0 auto;
+        <div class = "p-3 rounded shadow" style="max-width: 400px; margin: 0 auto;
         background: #C9BBFF">
 
-          <div class = "w-auto rounded m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
+          <div class = "w-auto m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
             {{ screen || '--' }}
           </div>
 
@@ -28,24 +28,27 @@
       </div>
 
       <div class = "col" style="margin-top: 160px">
-        <button type="button" class="btn btn-light" style="background: #B9FFD2;
-        height: 40px; width: 50px; font-size: larger; margin-left: 600px"
+        <button type="button" class="btn border-dark btn-light none" style="background: #B9FFD2;
+        height: 40px; width: 50px; font-size: large; margin-left: 600px"
                 v-on:click="updateHistory()">
           ↻
         </button>
-        <button type="button" class="btn btn-light" style="background: lightcoral;
+        <button type="button" class="btn border-dark btn-light" style="background: lightcoral;
         height: 40px; width: 50px"
                 v-on:click="fullDeleteHistory()">
           🗑
         </button>
-        <ul class="list-group" style="max-width: 700px">
-          <li class="list-group-item hover" v-for="rechnung in rechnungen"
-              :key="rechnung.id"
-              v-on:click="selectCalc(rechnung.id)">
-            ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
-            ||| {{ rechnung.datum }}
-          </li>
-        </ul>
+
+        <div class="bg-light-purple rounded shadow" style="width: 700px; height: 452px">
+          <ul class="list-group rounded" style="max-width: 700px; margin-bottom: 100px;">
+            <li class="list-group-item hover" v-for="rechnung in rechnungen"
+                :key="rechnung.id"
+                v-on:click="selectCalc(rechnung.id)">
+              ID: {{ rechnung.id }} ||| {{ rechnung.rechnung }} = {{ rechnung.ergebnis }}
+              ||| {{ rechnung.datum }}
+            </li>
+          </ul>
+        </div>
       </div>
 
     </div>
