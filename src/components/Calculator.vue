@@ -261,12 +261,14 @@ export default {
     post() {
       const today = new Date();
       // Leading Zeros fix by: https://stackoverflow.com/questions/8935414/getminutes-0-9-how-to-display-two-digit-numbers
+      const day = `0${today.getDate()}`.slice(-2);
+      const month = `0${today.getMonth() + 1}`.slice(-2);
       const hours = `0${today.getHours()}`.slice(-2);
       const minutes = `0${today.getMinutes()}`.slice(-2);
       const seconds = `0${today.getSeconds()}`.slice(-2);
       const data = {
         rechnung: this.rechenString,
-        datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
+        datum: `${day}.${month}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
         ergebnis: this.screen,
       };
       const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;
