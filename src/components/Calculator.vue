@@ -61,21 +61,15 @@
 
 export default {
   name: 'Calculator',
-  props: {
-    msg: String,
-  },
 
   mounted() {
     this.updateHistory();
   },
 
   data() {
-    const today = new Date();
     return {
       rechnungen: [],
 
-      datum: `${today.getDate()}.${today.getMonth() + 1}.${today.getFullYear()}
-      ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`,
       screen: '',
       currentValue: '',
       prevValue: '',
