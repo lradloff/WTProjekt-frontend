@@ -1,4 +1,5 @@
 <template>
+
   <div class="container-fluid" style="background: #A696EC">
 
     <div class="row">
@@ -28,41 +29,47 @@
 
       </div>
 
-      <div class="col-sm-1 btn-group-vertical" style="margin-bottom: 55px">
+      <div class="col-sm-1 btn-group-vertical" style="margin-top: 12px">
         <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 40px; max-height: 40px" v-on:click="selectVar('a')">
+                style="width: 48px; max-height: 45px" v-on:click="selectVar('a')">
           A
         </button>
         <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 40px; max-height: 40px" v-on:click="selectVar('b')">
+                style="width: 48px; max-height: 45px" v-on:click="selectVar('b')">
           B
         </button>
         <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 40px; max-height: 40px" v-on:click="selectVar('c')">
+                style="width: 48px; max-height: 45px" v-on:click="selectVar('c')">
           C
         </button>
         <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 40px; max-height: 40px" v-on:click="selectVar('d')">
+                style="width: 48px; max-height: 45px" v-on:click="selectVar('d')">
           D
         </button>
         <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 40px; max-height: 40px" v-on:click="selectVar('e')">
+                style="width: 48px; max-height: 45px" v-on:click="selectVar('e')">
           E
         </button>
-      </div>
-
-      <div class = "col" style="margin-top: 160px">
-        <button type="button" class="btn border-dark btn-light none" style="background: #B9FFD2;
-        height: 40px; width: 50px; font-size: large; margin-left: 600px"
-                v-on:click="updateHistory()">
-          ↻
-        </button>
-        <button type="button" class="btn border-dark btn-light" style="background: lightcoral;
-        height: 40px; width: 50px"
-                v-on:click="deleteHistory()">
+        <button type="button" class="btn btn-light shadow bg-light-coral"
+                style="width: 48px; max-height: 45px"
+                v-on:click="deleteVars()">
           🗑
         </button>
 
+      </div>
+
+      <div class = "col" style="margin-top: 160px">
+
+        <button type="button" class="btn border-dark btn-light bg-light-green" style="height: 40px;
+        width: 50px; font-size: large; margin-left: 600px"
+                v-on:click="updateHistory()">
+          ↻
+        </button>
+        <button type="button" class="btn border-dark btn-light bg-light-coral" style="height: 40px;
+         width: 50px"
+                v-on:click="deleteHistory()">
+          🗑
+        </button>
         <div class="bg-light-purple rounded shadow" style="width: 700px; height: 452px">
           <ul class="list-group rounded" style="max-width: 700px; margin-bottom: 100px;">
             <li class="list-group-item hover" v-for="rechnung in rechnungen"
@@ -73,6 +80,7 @@
             </li>
           </ul>
         </div>
+
       </div>
 
     </div>
@@ -118,6 +126,14 @@ export default {
 
   methods: {
 
+    deleteVars() {
+      this.a = '';
+      this.b = '';
+      this.c = '';
+      this.d = '';
+      this.e = '';
+    },
+
     selectVar(n) {
       if (this.varPressed) {
         switch (n) {
@@ -129,7 +145,11 @@ export default {
         }
         this.varPressed = false;
         this.clear();
-      } else if (!this.selectVarPressed) {
+      } else if (!this.selectVarPressed && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 'a', 'b', 'c', 'd',
+        'e', 'ans'].includes(this.latestButton))) {
+        if (this.equalsPressed) {
+          this.clear();
+        }
         switch (n) {
           case 'a':
             this.currentValue = this.a;
@@ -151,8 +171,6 @@ export default {
       this.screen = this.rechnungen[index].rechnung;
       this.prevValue = this.rechnungen[index].ergebnis;
       this.currentValue = this.rechnungen[index].ergebnis;
-      console.log(`prev: ${this.prevValue}`);
-      console.log(`curr: ${this.currentValue}`);
     },
 
     buttonPress(n) {
@@ -179,11 +197,18 @@ export default {
             this.currentValue = '';
             this.latestButton = '';
           }
-          if (this.screen.slice(-1) === '.') {
+          if (this.latestButton === '.') {
             this.dotPressed = false;
+          }
+          if (['a', 'b', 'c', 'd', 'e'].includes(this.screen.slice(-1))) {
+            this.selectVarPressed = false;
+            this.currentValue = '';
           }
           this.screen = this.screen.substring(0, this.screen.length - 1);
           this.currentValue = this.currentValue.substring(0, this.currentValue.length - 1);
+          if (['+', '-', '*', '/'].includes(this.screen.slice(-1))) {
+            this.latestButton = '+';
+          }
         }
       }
 
@@ -245,12 +270,11 @@ export default {
       }
 
       if (n === 'ans') {
-        if (this.prevResult !== '' && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(this.latestButton))) {
+        if (this.prevResult !== '' && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 'a', 'b', 'c', 'd', 'e',
+          'ans']
+          .includes(this.latestButton))) {
           if (this.equalsPressed) {
             this.clear();
-          }
-          if (this.latestButton === '.') {
-            return;
           }
           this.screen += 'ans';
           this.currentValue = this.prevResult;
@@ -293,13 +317,16 @@ export default {
         }
         this.equalsPressed = true;
         this.dotPressed = false;
+        this.latestButton = '=';
         if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR') {
           this.clear();
           this.screen = 'ERROR';
         } else if (this.screen === '') {
           return;
-        } else if (this.latestButton === 'ans' && this.screen === 'ans') {
+        } else if ((this.latestButton && this.screen) === 'ans') {
           this.screen = this.prevResult;
+          this.post();
+          setTimeout(this.updateHistory, 300);
         } else {
           this.prevResult = this.screen;
           this.post();
@@ -398,6 +425,12 @@ export default {
 }
 .bg-lighter-purple {
   background: #C9BBFF;
+}
+.bg-light-coral {
+  background: lightcoral;
+}
+.bg-light-green {
+  background: #B9FFD2;
 }
 .hover:hover {
   cursor: pointer;
