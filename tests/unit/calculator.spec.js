@@ -106,7 +106,169 @@ describe('Testing Calculator.vue', () => {
 
   });
 
-  it('should return right amount of calculations and correct data', () => {
+  it('should reset everything but the last result when pressing "AC"', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress('/')
+    wrapper.vm.buttonPress(5)
+    wrapper.vm.buttonPress('=')
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress(3)
+
+
+    expect(wrapper.vm.screen).toEqual('6+3')
+    expect(wrapper.vm.currentValue).toEqual('3')
+    expect(wrapper.vm.prevValue).toEqual('6')
+    expect(wrapper.vm.latestOperation).toEqual('+')
+    expect(wrapper.vm.latestButton).toEqual(3)
+    expect(wrapper.vm.equalsPressed).toBe(false)
+    expect(wrapper.vm.dotPressed).toBe(false)
+    expect(wrapper.vm.rechenString).toEqual('30/5')
+    expect(wrapper.vm.selectCalcPressed).toBe(false)
+    expect(wrapper.vm.prevResult).toEqual('6')
+
+    wrapper.vm.buttonPress('AC')
+
+    expect(wrapper.vm.screen).toEqual('')
+    expect(wrapper.vm.currentValue).toEqual('')
+    expect(wrapper.vm.prevValue).toEqual('')
+    expect(wrapper.vm.latestOperation).toEqual('')
+    expect(wrapper.vm.latestButton).toEqual('')
+    expect(wrapper.vm.equalsPressed).toBe(true)
+    expect(wrapper.vm.dotPressed).toBe(false)
+    expect(wrapper.vm.rechenString).toEqual('')
+    expect(wrapper.vm.selectCalcPressed).toBe(false)
+    expect(wrapper.vm.prevResult).toEqual('6')
+
+
+  });
+
+  it('should only delete last digit of current number when pressing "⌫", including decimal point', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress('*')
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(3)
+
+    //make sure that the current number is correct
+    expect(wrapper.vm.currentValue).toEqual('33.3')
+
+    wrapper.vm.buttonPress('⌫')
+
+    expect(wrapper.vm.currentValue).toEqual('33.')
+
+    //make sure that decimal points can be deleted
+    wrapper.vm.buttonPress('⌫')
+    expect(wrapper.vm.currentValue).toEqual('33')
+
+    //make sure that deleting does not exceed the current number (does not delete the '*')
+    wrapper.vm.buttonPress('⌫')
+    wrapper.vm.buttonPress('⌫')
+    wrapper.vm.buttonPress('⌫')
+    wrapper.vm.buttonPress('⌫')
+
+    expect(wrapper.vm.currentValue).toEqual('')
+    expect(wrapper.vm.screen).toEqual('100*')
+
+  });
+
+  it('should change operand when consecutively pressing them', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.buttonPress(5)
+    wrapper.vm.buttonPress('+')
+
+    expect(wrapper.vm.screen).toEqual('5+')
+
+    wrapper.vm.buttonPress('-')
+
+    expect(wrapper.vm.screen).toEqual('5-')
+
+    wrapper.vm.buttonPress('*')
+
+    expect(wrapper.vm.screen).toEqual('5*')
+
+    wrapper.vm.buttonPress('/')
+
+    expect(wrapper.vm.screen).toEqual('5/')
+
+  });
+
+  it('should not allow a number to have more than 1 decimal point', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(3)
+
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(5)
+
+    expect(wrapper.vm.screen).toEqual('3.33+.35')
+
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('3.68')
+
+
+
+
+
+
+
+
+  });
+
+  it('should clear the whole history when pressing the delete history button (trashcan)', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.setData({
+        rechnungen: [
+          {
+            id: 1,
+            rechnung: '10*10+3',
+            ergebnis: '103',
+            datum: `05.01.2022`
+          },
+          {
+            id: 2,
+            rechnung: '3/3+6',
+            ergebnis: '7',
+            datum: `02.01.2022`
+          }
+        ]
+      })
+
+    expect(wrapper.vm.rechnungen.length).toEqual(2)
+
+    wrapper.vm.deleteHistory()
+
+    expect(wrapper.vm.rechnungen.length).toEqual(0)
+  });
+
+
+
+
+
+  it('should return right amount of calculations and their data', () => {
 
     const wrapper = mount(Calculator)
 
@@ -165,6 +327,7 @@ describe('Testing Calculator.vue', () => {
     expect(wrapper.vm.rechnungen[1].ergebnis).toEqual('75')
 
   });
+
 
 
 });

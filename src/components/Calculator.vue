@@ -5,10 +5,11 @@
 
       <div class="col" style="margin-top: 200px">
 
-        <div class = "p-3 rounded shadow" style="max-width: 400px; margin: 0 auto;
-        background: #C9BBFF">
+        <div class = "p-3 rounded shadow" style="max-width: 400px;
+        background: #C9BBFF; margin-left: 450px">
 
-          <div class = "w-auto m-1 p-3 text-end lead fw-bold text-black bg-light-purple">
+          <div class = "w-auto m-1 p-3 text-end lead fw-bold text-black bg-light-purple"
+               style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">
             {{ screen || '--' }}
           </div>
 
@@ -27,6 +28,29 @@
 
       </div>
 
+      <div class="col-sm-1 btn-group-vertical" style="margin-bottom: 55px">
+        <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                style="width: 40px; max-height: 40px" v-on:click="selectVar('a')">
+          A
+        </button>
+        <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                style="width: 40px; max-height: 40px" v-on:click="selectVar('b')">
+          B
+        </button>
+        <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                style="width: 40px; max-height: 40px" v-on:click="selectVar('c')">
+          C
+        </button>
+        <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                style="width: 40px; max-height: 40px" v-on:click="selectVar('d')">
+          D
+        </button>
+        <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                style="width: 40px; max-height: 40px" v-on:click="selectVar('e')">
+          E
+        </button>
+      </div>
+
       <div class = "col" style="margin-top: 160px">
         <button type="button" class="btn border-dark btn-light none" style="background: #B9FFD2;
         height: 40px; width: 50px; font-size: large; margin-left: 600px"
@@ -35,7 +59,7 @@
         </button>
         <button type="button" class="btn border-dark btn-light" style="background: lightcoral;
         height: 40px; width: 50px"
-                v-on:click="fullDeleteHistory()">
+                v-on:click="deleteHistory()">
           🗑
         </button>
 
@@ -80,12 +104,45 @@ export default {
       rechenString: '',
       selectCalcPressed: false,
       prevResult: '',
+      varPressed: false,
+      selectVarPressed: false,
+      a: '',
+      b: '',
+      c: '',
+      d: '',
+      e: '',
 
       calculatorButtons: ['AC', '⌫', 'ans', '/', 7, 8, 9, '*', 4, 5, 6, '-', 1, 2, 3, '+', 'var', 0, '.', '='],
     };
   },
 
   methods: {
+
+    selectVar(n) {
+      if (this.varPressed) {
+        switch (n) {
+          case 'a':
+            this.a = this.prevResult;
+            break;
+          default:
+            break;
+        }
+        this.varPressed = false;
+        this.clear();
+      } else if (!this.selectVarPressed) {
+        switch (n) {
+          case 'a':
+            this.currentValue = this.a;
+            this.screen += 'a';
+            this.latestButton = n;
+            break;
+          default:
+            break;
+        }
+        this.selectVarPressed = true;
+        this.equalsPressed = false;
+      }
+    },
 
     selectCalc(dbid) {
       this.selectCalcPressed = true;
@@ -102,6 +159,13 @@ export default {
       if (n === 'AC') {
         this.clear();
         return;
+      }
+
+      if (n === 'var') {
+        if (this.equalsPressed && !(this.screen === '')) {
+          this.screen = 'Variable auswählen -->';
+          this.varPressed = true;
+        }
       }
 
       if (n === '⌫') {
@@ -137,7 +201,7 @@ export default {
           }
           this.dotPressed = true;
         }
-        if (this.latestButton === 'ans') {
+        if (this.latestButton === 'ans' || this.selectVarPressed) {
           return;
         }
         this.currentValue += `${n}`;
@@ -176,6 +240,7 @@ export default {
           this.latestButton = n;
           this.equalsPressed = false;
           this.dotPressed = false;
+          this.selectVarPressed = false;
         }
       }
 
@@ -200,9 +265,16 @@ export default {
           this.selectCalcPressed = false;
           this.equalsPressed = true;
           this.dotPressed = false;
-          console.log(`prev: ${this.prevValue}`);
-          console.log(`curr: ${this.currentValue}`);
           return;
+        }
+        if (['a', 'b', 'c', 'd', 'e'].includes(this.latestButton) && this.screen.length === 1) {
+          switch (this.latestButton) {
+            case 'a':
+              this.screen = this.a;
+              break;
+            default:
+              break;
+          }
         }
         if (this.latestOperation === '+') {
           this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
@@ -250,6 +322,8 @@ export default {
       this.equalsPressed = true;
       this.dotPressed = false;
       this.rechenString = '';
+      this.varPressed = false;
+      this.selectVarPressed = false;
     },
 
     post() {
@@ -297,7 +371,7 @@ export default {
         .catch((error) => console.log('Error:', error));
     },
 
-    fullDeleteHistory() {
+    deleteHistory() {
       for (let i = 0; i < this.rechnungen.length; i += 1) {
         const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen/${this.rechnungen[i].id}`;
         const requestOptions = {
@@ -321,6 +395,9 @@ export default {
 }
 .bg-light-purple {
   background: #E6DFFF;
+}
+.bg-lighter-purple {
+  background: #C9BBFF;
 }
 .hover:hover {
   cursor: pointer;
