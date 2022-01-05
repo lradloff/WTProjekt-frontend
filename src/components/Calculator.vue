@@ -140,6 +140,18 @@ export default {
           case 'a':
             this.a = this.prevResult;
             break;
+          case 'b':
+            this.b = this.prevResult;
+            break;
+          case 'c':
+            this.c = this.prevResult;
+            break;
+          case 'd':
+            this.d = this.prevResult;
+            break;
+          case 'e':
+            this.e = this.prevResult;
+            break;
           default:
             break;
         }
@@ -154,6 +166,26 @@ export default {
           case 'a':
             this.currentValue = this.a;
             this.screen += 'a';
+            this.latestButton = n;
+            break;
+          case 'b':
+            this.currentValue = this.b;
+            this.screen += 'b';
+            this.latestButton = n;
+            break;
+          case 'c':
+            this.currentValue = this.c;
+            this.screen += 'c';
+            this.latestButton = n;
+            break;
+          case 'd':
+            this.currentValue = this.d;
+            this.screen += 'd';
+            this.latestButton = n;
+            break;
+          case 'e':
+            this.currentValue = this.e;
+            this.screen += 'e';
             this.latestButton = n;
             break;
           default:
@@ -295,6 +327,18 @@ export default {
           switch (this.latestButton) {
             case 'a':
               this.screen = this.a;
+              break;
+            case 'b':
+              this.screen = this.b;
+              break;
+            case 'c':
+              this.screen = this.c;
+              break;
+            case 'd':
+              this.screen = this.d;
+              break;
+            case 'e':
+              this.screen = this.e;
               break;
             default:
               break;
