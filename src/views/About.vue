@@ -1,7 +1,7 @@
 <template>
   <div class="about container-fluid" style="background: #A696EC">
     <h1 style="text-align: center">
-      Über den Taschenrechner
+      Über diesen Taschenrechner
       <h3 style="margin-top: 100px">
         Dies ist ein einfacher Taschenrechner. Es lassen sich Rechnungen mithilfe der vier
         Grundrechenarten durchführen, wobei der komplette Rechenweg auf dem Display angezeigt wird.

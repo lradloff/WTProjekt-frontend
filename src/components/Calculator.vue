@@ -51,27 +51,32 @@
                   style="width: 48px; max-height: 45px" v-on:click="selectVar('e')">
             E
           </button>
-          <button type="button" class="btn btn-light shadow bg-light-coral"
+          <button type="button" class="btn btn-light bg-light-coral shadow"
                   style="width: 48px; max-height: 45px"
                   v-on:click="deleteVars()">
             🗑
           </button>
       </div>
         <div class="col-1 btn-group-vertical" style="margin-top: 162px; margin-left: 10px;
-        width: 70px; height: 200px; background: red">
-          <div>
+         width: 75px; height: 200px">
+          <div style="max-width: 100px; overflow: hidden; white-space: nowrap;
+           text-overflow: ellipsis">
             {{ a || '--'}}
           </div>
-          <div style="margin-top: 13px">
+          <div style="margin-top: 13px; max-width: 100px; overflow: hidden; white-space: nowrap;
+           text-overflow: ellipsis">
             {{ b || '--'}}
           </div>
-          <div style="margin-top: 13px">
+          <div style="margin-top: 13px; max-width: 100px; overflow: hidden; white-space: nowrap;
+           text-overflow: ellipsis">
             {{ c || '--'}}
           </div>
-          <div style="margin-top: 13px">
+          <div style="margin-top: 13px; max-width: 100px; overflow: hidden; white-space: nowrap;
+           text-overflow: ellipsis">
             {{ d || '--'}}
           </div>
-          <div style="margin-top: 13px">
+          <div style="margin-top: 13px; max-width: 100px; overflow: hidden; white-space: nowrap;
+           text-overflow: ellipsis">
             {{ e || '--'}}
           </div>
         </div>
@@ -262,11 +267,12 @@ export default {
         if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '') && !(this.screen === '.')) {
           this.screen = 'Variable auswählen -->';
           this.varPressed = true;
+          this.latestButton = 'var';
         }
       }
 
       if (n === '⌫') {
-        if (this.screen.length === 1 || this.equalsPressed) {
+        if (this.screen.length === 1 || this.equalsPressed || this.latestButton === 'var') {
           this.clear();
           return;
         }
@@ -314,6 +320,9 @@ export default {
       }
 
       if (['+', '-', '*', '/'].includes(n)) {
+        if (this.latestButton === 'var') {
+          return;
+        }
         if (this.screen === 'ERROR' || this.screen === '') {
           this.clear();
           return;
