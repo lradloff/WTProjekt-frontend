@@ -266,8 +266,6 @@ describe('Testing Calculator.vue', () => {
 
 
 
-
-
   it('should return right amount of calculations and their data', () => {
 
     const wrapper = mount(Calculator)

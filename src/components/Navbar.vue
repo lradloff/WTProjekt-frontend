@@ -11,8 +11,6 @@
         <div class="navbar-nav">
         <router-link class = "nav-link" to ="/">Home</router-link>
         <router-link class = "nav-link" to ="/about">About</router-link>
-        <ul class="navbar-nav">
-        </ul>
       </div>
         </div>
     </div>

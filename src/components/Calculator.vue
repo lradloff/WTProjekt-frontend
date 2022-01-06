@@ -7,7 +7,7 @@
       <div class="col" style="margin-top: 200px">
 
         <div class = "p-3 rounded shadow" style="max-width: 400px;
-        background: #C9BBFF; margin-left: 450px">
+        background: #C9BBFF; margin-left: 290px">
 
           <div class = "w-auto m-1 p-3 text-end lead fw-bold text-black bg-light-purple"
                style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis">
@@ -29,36 +29,63 @@
 
       </div>
 
-      <div class="col-sm-1 btn-group-vertical" style="margin-top: 12px">
-        <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 48px; max-height: 45px" v-on:click="selectVar('a')">
-          A
-        </button>
-        <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 48px; max-height: 45px" v-on:click="selectVar('b')">
-          B
-        </button>
-        <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 48px; max-height: 45px" v-on:click="selectVar('c')">
-          C
-        </button>
-        <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 48px; max-height: 45px" v-on:click="selectVar('d')">
-          D
-        </button>
-        <button type="button" class="btn btn-light bg-lighter-purple shadow"
-                style="width: 48px; max-height: 45px" v-on:click="selectVar('e')">
-          E
-        </button>
-        <button type="button" class="btn btn-light shadow bg-light-coral"
-                style="width: 48px; max-height: 45px"
-                v-on:click="deleteVars()">
-          🗑
-        </button>
-
+      <div class="col-sm-1">
+        <div class="col-sm-auto btn-group-vertical" style="margin-top: 200px">
+          <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                  style="width: 48px; max-height: 45px" v-on:click="selectVar('a')">
+            A
+          </button>
+          <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                  style="width: 48px; max-height: 45px" v-on:click="selectVar('b')">
+            B
+          </button>
+          <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                  style="width: 48px; max-height: 45px" v-on:click="selectVar('c')">
+            C
+          </button>
+          <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                  style="width: 48px; max-height: 45px" v-on:click="selectVar('d')">
+            D
+          </button>
+          <button type="button" class="btn btn-light bg-lighter-purple shadow"
+                  style="width: 48px; max-height: 45px" v-on:click="selectVar('e')">
+            E
+          </button>
+          <button type="button" class="btn btn-light shadow bg-light-coral"
+                  style="width: 48px; max-height: 45px"
+                  v-on:click="deleteVars()">
+            🗑
+          </button>
+      </div>
+        <div class="col-1 btn-group-vertical" style="margin-top: 162px; margin-left: 10px;
+        width: 70px; height: 200px; background: red">
+          <div>
+            {{ a || '--'}}
+          </div>
+          <div style="margin-top: 13px">
+            {{ b || '--'}}
+          </div>
+          <div style="margin-top: 13px">
+            {{ c || '--'}}
+          </div>
+          <div style="margin-top: 13px">
+            {{ d || '--'}}
+          </div>
+          <div style="margin-top: 13px">
+            {{ e || '--'}}
+          </div>
+        </div>
       </div>
 
-      <div class = "col" style="margin-top: 160px">
+      <!-- spacers between calculator and history-->
+      <div class="col-sm-auto btn-group-vertical">
+      </div>
+      <div class="col-sm-auto btn-group-vertical">
+      </div>
+      <div class="col-sm-auto btn-group-vertical">
+      </div>
+
+      <div class = "col" style="margin-top: 160px; margin-right: 250px">
 
         <button type="button" class="btn border-dark btn-light bg-light-green" style="height: 40px;
         width: 50px; font-size: large; margin-left: 600px"
@@ -138,19 +165,39 @@ export default {
       if (this.varPressed) {
         switch (n) {
           case 'a':
-            this.a = this.prevResult;
+            if (this.equalsPressed) {
+              this.a = this.prevResult;
+            } else {
+              this.a = this.currentValue;
+            }
             break;
           case 'b':
-            this.b = this.prevResult;
+            if (this.equalsPressed) {
+              this.b = this.prevResult;
+            } else {
+              this.b = this.currentValue;
+            }
             break;
           case 'c':
-            this.c = this.prevResult;
+            if (this.equalsPressed) {
+              this.c = this.prevResult;
+            } else {
+              this.c = this.currentValue;
+            }
             break;
           case 'd':
-            this.d = this.prevResult;
+            if (this.equalsPressed) {
+              this.d = this.prevResult;
+            } else {
+              this.d = this.currentValue;
+            }
             break;
           case 'e':
-            this.e = this.prevResult;
+            if (this.equalsPressed) {
+              this.e = this.prevResult;
+            } else {
+              this.e = this.currentValue;
+            }
             break;
           default:
             break;
@@ -212,7 +259,7 @@ export default {
       }
 
       if (n === 'var') {
-        if (this.equalsPressed && !(this.screen === '')) {
+        if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '') && !(this.screen === '.')) {
           this.screen = 'Variable auswählen -->';
           this.varPressed = true;
         }
@@ -258,7 +305,7 @@ export default {
           }
           this.dotPressed = true;
         }
-        if (this.latestButton === 'ans' || this.selectVarPressed) {
+        if (this.latestButton === 'ans' || this.selectVarPressed || this.varPressed) {
           return;
         }
         this.currentValue += `${n}`;
@@ -362,11 +409,12 @@ export default {
         this.equalsPressed = true;
         this.dotPressed = false;
         this.latestButton = '=';
+        if (this.screen === '') {
+          return;
+        }
         if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR') {
           this.clear();
           this.screen = 'ERROR';
-        } else if (this.screen === '') {
-          return;
         } else if ((this.latestButton && this.screen) === 'ans') {
           this.screen = this.prevResult;
           this.post();
@@ -377,11 +425,6 @@ export default {
           setTimeout(this.updateHistory, 300);
         }
       }
-
-      console.log(`screen: ${this.screen}`);
-      console.log(`curr: ${this.currentValue}`);
-      console.log(`prevV: ${this.prevValue}`);
-      console.log(`prevR: ${this.prevResult}`);
     },
 
     clear() {
