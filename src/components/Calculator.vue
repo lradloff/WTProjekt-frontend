@@ -161,7 +161,6 @@ export default {
   methods: {
 
     buttonPress(n) {
-      console.log('test');
       if (n === 'AC') {
         this.clear();
         return;
@@ -170,7 +169,17 @@ export default {
       if (n === 'var') {
         if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '')
           && !(this.screen === '.') && !(this.screen === '-') && !(this.screen === 'ERROR')) {
-          this.screen = 'Variable auswählen -->';
+          if (this.equalsPressed) {
+            if (this.prevResult.length > 7) {
+              this.screen = `[${this.prevResult.slice(0, 7)}..] Variable auswählen -->`;
+            } else {
+              this.screen = `[${this.prevResult}] Variable auswählen -->`;
+            }
+          } else if (this.currentValue.length > 7) {
+            this.screen = `[${this.currentValue.slice(0, 7)}..] Variable auswählen -->`;
+          } else {
+            this.screen = `[${this.currentValue}] Variable auswählen -->`;
+          }
           this.varPressed = true;
           this.latestButton = 'var';
         }

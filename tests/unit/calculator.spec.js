@@ -436,9 +436,27 @@ describe('Testing Calculator.vue', () => {
     wrapper.vm.buttonPress('+')
     expect(wrapper.vm.screen).toEqual('ERROR')
 
+    //when trying to operate with an empty variable
+    wrapper.vm.selectVar('a')
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress('=')
+    expect(wrapper.vm.screen).toEqual('ERROR')
+
+    //when trying to operate with a decimal point only
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('*')
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress('=')
+    expect(wrapper.vm.screen).toEqual('ERROR')
+
+    //when pressing '=' when there is no number following an operand
+    wrapper.vm.buttonPress(4)
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.buttonPress('=')
+    expect(wrapper.vm.screen).toEqual('ERROR')
+
   });
-
-
 
   it('should return right amount of calculations and their data', () => {
 
