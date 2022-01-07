@@ -227,7 +227,7 @@ describe('Testing Calculator.vue', () => {
 
   });
 
-  it('should clear the whole history when pressing the delete history button (trashcan)', () => {
+  it('should clear the whole history when pressing the delete history button', () => {
 
     const wrapper = mount(Calculator)
 
@@ -333,14 +333,14 @@ describe('Testing Calculator.vue', () => {
     wrapper.vm.b = '2';
     wrapper.vm.c = '3.5';
     wrapper.vm.d = '4';
-    wrapper.vm.e = '5.5';
+    wrapper.vm.e = '5.25';
 
     wrapper.vm.selectVar('a')
-    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress('*')
     wrapper.vm.selectVar('b')
     wrapper.vm.buttonPress('=')
 
-    expect(wrapper.vm.screen).toEqual('3')
+    expect(wrapper.vm.screen).toEqual('2')
 
     wrapper.vm.buttonPress('+')
     wrapper.vm.selectVar('c')
@@ -348,14 +348,96 @@ describe('Testing Calculator.vue', () => {
     wrapper.vm.selectVar('d')
     wrapper.vm.buttonPress('=')
 
-    expect(wrapper.vm.screen).toEqual('2.5')
+    expect(wrapper.vm.screen).toEqual('1.5')
 
     wrapper.vm.selectVar('e')
     wrapper.vm.buttonPress('=')
 
-    expect(wrapper.vm.screen).toEqual('5.5')
+    expect(wrapper.vm.screen).toEqual('5.25')
 
   });
+
+  it('should delete every variable when pressing the delete variables button', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.a = '1251';
+    wrapper.vm.b = '0.312';
+    wrapper.vm.c = '34';
+    wrapper.vm.d = '4.154512';
+    wrapper.vm.e = '550012.23123';
+
+    wrapper.vm.deleteVars()
+
+    expect(wrapper.vm.a).toEqual('')
+    expect(wrapper.vm.b).toEqual('')
+    expect(wrapper.vm.c).toEqual('')
+    expect(wrapper.vm.d).toEqual('')
+    expect(wrapper.vm.e).toEqual('')
+
+  });
+
+  it('should be able to negate numbers, ans and variables', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.a = '-100';
+    wrapper.vm.b = '0';
+
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(5)
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('0.5')
+    wrapper.vm.buttonPress('AC')
+
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.selectVar('a')
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('100')
+    wrapper.vm.buttonPress('AC')
+
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.buttonPress('ans')
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('-99')
+    wrapper.vm.buttonPress('AC')
+
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.selectVar('b')
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('0')
+
+  });
+
+  it('should return ERROR in case of a syntax error', () => {
+
+    const wrapper = mount(Calculator)
+
+    //when trying to divide by zero
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress('/')
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress('=')
+    expect(wrapper.vm.screen).toEqual('ERROR')
+
+    wrapper.vm.buttonPress(8)
+    wrapper.vm.buttonPress('/')
+    wrapper.vm.buttonPress(0)
+    wrapper.vm.buttonPress('+')
+    expect(wrapper.vm.screen).toEqual('ERROR')
+
+  });
+
 
 
   it('should return right amount of calculations and their data', () => {
@@ -370,6 +452,7 @@ describe('Testing Calculator.vue', () => {
     const hours = `0${today.getHours()}`.slice(-2);
     const minutes = `0${today.getMinutes()}`.slice(-2);
     const seconds = `0${today.getSeconds()}`.slice(-2);
+    const datum = `${day}.${month}.${today.getFullYear()} -- ${hours}:${minutes}:${seconds}`
 
     wrapper.vm.buttonPress(1)
     wrapper.vm.buttonPress(0)
@@ -398,13 +481,13 @@ describe('Testing Calculator.vue', () => {
           id: 1,
           rechnung: calc1,
           ergebnis: result1,
-          datum: `${day}.${month}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`
+          datum: datum
         },
         {
           id: 2,
           rechnung: calc2,
           ergebnis: result2,
-          datum: `${day}.${month}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`
+          datum: datum
         }
       ]
       }
@@ -413,11 +496,10 @@ describe('Testing Calculator.vue', () => {
     expect(wrapper.vm.rechnungen.length).toEqual(2)
     expect(wrapper.vm.rechnungen[0].rechnung).toEqual('10/10')
     expect(wrapper.vm.rechnungen[0].ergebnis).toEqual('1')
+    expect(wrapper.vm.rechnungen[0].datum).toEqual(datum)
     expect(wrapper.vm.rechnungen[1].rechnung).toEqual('24*3+3')
     expect(wrapper.vm.rechnungen[1].ergebnis).toEqual('75')
+    expect(wrapper.vm.rechnungen[1].datum).toEqual(datum)
 
   });
-
-
-
 });

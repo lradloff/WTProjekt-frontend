@@ -249,6 +249,11 @@ export default {
         } else {
           this.selectCalcPressed = false;
           if (this.latestOperation === '/') {
+            if (this.currentValue === '0') {
+              this.clear();
+              this.screen = 'ERROR';
+              return;
+            }
             this.prevValue = (parseFloat(this.prevValue) / parseFloat(this.currentValue))
               .toString();
           } else if (this.latestOperation === '-') {
@@ -353,6 +358,10 @@ export default {
           this.screen = (parseFloat(this.prevValue) * parseFloat(this.currentValue)).toString();
         }
         if (this.latestOperation === '/') {
+          if (this.currentValue === '0') {
+            this.clear();
+            this.screen = 'ERROR';
+          }
           this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
         }
         if (this.screen.startsWith('.') && this.screen.length > 1) {
