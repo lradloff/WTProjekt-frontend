@@ -139,11 +139,12 @@ export default {
       prevValue: '',
       latestOperation: '',
       latestButton: '',
+      rechenString: '',
+      prevResult: '',
+      selectCalcResult: '',
       equalsPressed: true,
       dotPressed: false,
-      rechenString: '',
       selectCalcPressed: false,
-      prevResult: '',
       varPressed: false,
       selectVarPressed: false,
       minusFirst: false,
@@ -159,12 +160,263 @@ export default {
 
   methods: {
 
+    buttonPress(n) {
+      console.log('test');
+      if (n === 'AC') {
+        this.clear();
+        return;
+      }
+
+      if (n === 'var') {
+        if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '')
+          && !(this.screen === '.') && !(this.screen === '-') && !(this.screen === 'ERROR')) {
+          this.screen = 'Variable auswählen -->';
+          this.varPressed = true;
+          this.latestButton = 'var';
+        }
+      }
+
+      if (n === '⌫') {
+        if (this.screen.length === 1 || this.equalsPressed || this.latestButton === 'var') {
+          this.clear();
+          return;
+        }
+        if (!(['+', '-', '*', '/'].includes(this.screen.slice(-1)))) {
+          if (this.latestButton === 'ans') {
+            this.screen = this.screen.substring(0, this.screen.length - 2);
+            this.currentValue = '';
+            this.latestButton = '';
+          }
+          if (['a', 'b', 'c', 'd', 'e'].includes(this.screen.slice(-1))) {
+            this.selectVarPressed = false;
+            this.currentValue = '';
+          }
+          if (this.screen.slice(-1) === '.') {
+            this.dotPressed = false;
+          }
+          this.screen = this.screen.substring(0, this.screen.length - 1);
+          this.currentValue = this.currentValue.substring(0, this.currentValue.length - 1);
+          if (['+', '-', '*', '/'].includes(this.screen.slice(-1))) {
+            this.latestButton = '+';
+          }
+        }
+      }
+
+      if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
+        if (this.selectCalcPressed) {
+          this.selectCalcPressed = false;
+        }
+        if (this.equalsPressed) {
+          this.clear();
+          this.equalsPressed = false;
+        }
+        if (n === '.') {
+          if (this.dotPressed) {
+            return;
+          }
+          this.dotPressed = true;
+        }
+        if (this.latestButton === 'ans' || this.selectVarPressed || this.varPressed || (this.currentValue === '0' && n === 0)) {
+          return;
+        }
+        this.currentValue += `${n}`;
+        this.screen += `${n}`;
+        this.latestButton = n;
+        this.minusFirst = false;
+      }
+
+      if (['+', '-', '*', '/'].includes(n)) {
+        if (this.latestButton === 'var' || this.minusFirst === true || this.currentValue === '.') {
+          return;
+        }
+        if (this.screen === '' && n === '-') {
+          this.minusFirst = true;
+          this.screen = n;
+          this.currentValue = n;
+          this.latestButton = n;
+          this.equalsPressed = false;
+          this.dotPressed = false;
+          this.selectVarPressed = false;
+          return;
+        }
+        if (this.screen === 'ERROR' || this.screen === '') {
+          this.clear();
+          return;
+        }
+        if (['+', '-', '*', '/'].includes(this.latestButton)) {
+          this.screen = this.screen.substring(0, this.screen.length - 1) + n;
+          this.latestOperation = n;
+        } else {
+          this.selectCalcPressed = false;
+          if (this.latestOperation === '/') {
+            this.prevValue = (parseFloat(this.prevValue) / parseFloat(this.currentValue))
+              .toString();
+          } else if (this.latestOperation === '-') {
+            this.prevValue = (parseFloat(this.prevValue) - parseFloat(this.currentValue))
+              .toString();
+          } else if (this.latestOperation === '+') {
+            this.prevValue = (parseFloat(this.prevValue) + parseFloat(this.currentValue))
+              .toString();
+          } else if (this.latestOperation === '*') {
+            this.prevValue = (parseFloat(this.prevValue) * parseFloat(this.currentValue))
+              .toString();
+          } else {
+            this.prevValue = parseFloat(this.currentValue).toString();
+          }
+          this.latestOperation = n;
+          this.screen += `${n}`;
+          this.currentValue = '';
+          this.latestButton = n;
+          this.equalsPressed = false;
+          this.dotPressed = false;
+          this.selectVarPressed = false;
+        }
+      }
+
+      if (n === 'ans') {
+        if (this.prevResult !== '' && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 'a', 'b', 'c', 'd', 'e',
+          'ans'].includes(this.latestButton))) {
+          if (this.equalsPressed) {
+            this.clear();
+          }
+          if (this.screen === '-') {
+            this.currentValue = (parseFloat(this.prevResult) * -1).toString();
+            this.screen += 'ans';
+            this.latestButton = '-ans';
+            this.minusFirst = false;
+            return;
+          }
+          this.screen += 'ans';
+          this.currentValue = this.prevResult;
+          this.latestButton = n;
+        }
+      }
+
+      if (n === '=') {
+        this.rechenString = this.screen;
+        if (this.selectCalcPressed) {
+          this.prevResult = this.selectCalcResult;
+          this.screen = this.prevResult;
+          this.equalsPressed = true;
+          this.dotPressed = false;
+          this.selectCalcPressed = false;
+          return;
+        }
+        if (['a', 'b', 'c', 'd', 'e'].includes(this.latestButton) && (this.screen.length <= 2)) {
+          switch (this.latestButton) {
+            case 'a':
+              if (this.screen === '-a') {
+                this.screen = (parseFloat(this.a) * -1).toString();
+              } else {
+                this.screen = this.a;
+              }
+              break;
+            case 'b':
+              if (this.screen === '-b') {
+                this.screen = (parseFloat(this.b) * -1).toString();
+              } else {
+                this.screen = this.b;
+              }
+              break;
+            case 'c':
+              if (this.screen === '-c') {
+                this.screen = (parseFloat(this.c) * -1).toString();
+              } else {
+                this.screen = this.c;
+              }
+              break;
+            case 'd':
+              if (this.screen === '-d') {
+                this.screen = (parseFloat(this.d) * -1).toString();
+              } else {
+                this.screen = this.d;
+              }
+              break;
+            case 'e':
+              if (this.screen === '-e') {
+                this.screen = (parseFloat(this.e) * -1).toString();
+              } else {
+                this.screen = this.e;
+              }
+              break;
+            default:
+              break;
+          }
+        }
+        if (this.latestOperation === '+') {
+          this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
+        }
+        if (this.latestOperation === '-') {
+          this.screen = (parseFloat(this.prevValue) - parseFloat(this.currentValue)).toString();
+        }
+        if (this.latestOperation === '*') {
+          this.screen = (parseFloat(this.prevValue) * parseFloat(this.currentValue)).toString();
+        }
+        if (this.latestOperation === '/') {
+          this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
+        }
+        if (this.screen.startsWith('.') && this.screen.length > 1) {
+          this.screen = `0${this.screen}`;
+        }
+        this.equalsPressed = true;
+        this.dotPressed = false;
+        this.latestButton = '=';
+        if (this.screen === '') {
+          return;
+        }
+        if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR' || this.screen === '-') {
+          this.clear();
+          this.screen = 'ERROR';
+        } else if (this.screen === 'ans' || this.screen === '-ans') {
+          if (this.screen === '-ans') {
+            this.screen = (parseFloat(this.prevResult) * -1).toString();
+            this.prevResult = this.screen;
+          } else {
+            this.screen = this.prevResult;
+          }
+          this.post();
+          setTimeout(this.updateHistory, 300);
+        } else {
+          this.prevResult = this.screen;
+          this.post();
+          setTimeout(this.updateHistory, 300);
+        }
+      }
+    },
+
+    clear() {
+      this.currentValue = '';
+      this.latestOperation = '';
+      this.screen = '';
+      this.latestButton = '';
+      this.rechenString = '';
+      this.selectCalcResult = '';
+      this.prevValue = '';
+      this.equalsPressed = true;
+      this.dotPressed = false;
+      this.varPressed = false;
+      this.selectVarPressed = false;
+      this.minusFirst = false;
+      this.selectCalcPressed = false;
+    },
+
+    selectCalc(dbid) {
+      const index = this.rechnungen.findIndex((element) => element.id === dbid);
+      this.clear();
+      this.screen = this.rechnungen[index].rechnung;
+      this.selectCalcResult = this.rechnungen[index].ergebnis;
+      this.currentValue = this.rechnungen[index].ergebnis;
+      this.selectCalcPressed = true;
+    },
+
     deleteVars() {
-      this.a = '';
-      this.b = '';
-      this.c = '';
-      this.d = '';
-      this.e = '';
+      if (!this.varPressed) {
+        this.a = '';
+        this.b = '';
+        this.c = '';
+        this.d = '';
+        this.e = '';
+      }
     },
 
     selectVar(n) {
@@ -223,9 +475,11 @@ export default {
           default:
             break;
         }
-        this.varPressed = false;
         this.clear();
       } else if (this.selectVarPressed) {
+        if (this.equalsPressed) {
+          this.clear();
+        }
         switch (n) {
           case 'a':
             if (['-b', '-c', '-d', '-e'].includes(this.screen)) {
@@ -333,251 +587,6 @@ export default {
       }
     },
 
-    selectCalc(dbid) {
-      this.selectCalcPressed = true;
-      const index = this.rechnungen.findIndex((element) => element.id === dbid);
-      this.clear();
-      this.screen = this.rechnungen[index].rechnung;
-      this.prevValue = this.rechnungen[index].ergebnis;
-      this.currentValue = this.rechnungen[index].ergebnis;
-    },
-
-    buttonPress(n) {
-      if (n === 'AC') {
-        this.clear();
-        return;
-      }
-
-      if (n === 'var') {
-        if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '') && !(this.screen === '.') && !(this.screen === '-')) {
-          this.screen = 'Variable auswählen -->';
-          this.varPressed = true;
-          this.latestButton = 'var';
-        }
-      }
-
-      if (n === '⌫') {
-        if (this.screen.length === 1 || this.equalsPressed || this.latestButton === 'var') {
-          this.clear();
-          return;
-        }
-        if (!(['+', '-', '*', '/'].includes(this.screen.slice(-1)))) {
-          if (this.latestButton === 'ans') {
-            this.screen = this.screen.substring(0, this.screen.length - 2);
-            this.currentValue = '';
-            this.latestButton = '';
-          }
-          if (['a', 'b', 'c', 'd', 'e'].includes(this.screen.slice(-1))) {
-            this.selectVarPressed = false;
-            this.currentValue = '';
-          }
-          if (this.screen.slice(-1) === '.') {
-            this.dotPressed = false;
-          }
-          this.screen = this.screen.substring(0, this.screen.length - 1);
-          this.currentValue = this.currentValue.substring(0, this.currentValue.length - 1);
-          if (['+', '-', '*', '/'].includes(this.screen.slice(-1))) {
-            this.latestButton = '+';
-          }
-        }
-      }
-
-      if ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.'].includes(n)) {
-        if (this.selectCalcPressed) {
-          this.selectCalcPressed = false;
-        }
-        if (this.equalsPressed) {
-          this.clear();
-          this.equalsPressed = false;
-        }
-        if (n === '.') {
-          if (this.dotPressed) {
-            return;
-          }
-          this.dotPressed = true;
-        }
-        if (this.latestButton === 'ans' || this.selectVarPressed || this.varPressed || (this.currentValue === '0' && n === 0)) {
-          return;
-        }
-        this.currentValue += `${n}`;
-        this.screen += `${n}`;
-        this.latestButton = n;
-        this.minusFirst = false;
-      }
-
-      if (['+', '-', '*', '/'].includes(n)) {
-        if (this.latestButton === 'var' || this.minusFirst === true || this.currentValue === '.') {
-          return;
-        }
-        if (this.screen === '' && n === '-') {
-          this.minusFirst = true;
-          this.screen = n;
-          this.currentValue = n;
-          this.latestButton = n;
-          this.equalsPressed = false;
-          this.dotPressed = false;
-          this.selectVarPressed = false;
-          return;
-        }
-        if (this.screen === 'ERROR' || this.screen === '') {
-          this.clear();
-          return;
-        }
-        if (['+', '-', '*', '/'].includes(this.latestButton)) {
-          this.screen = this.screen.substring(0, this.screen.length - 1) + n;
-          this.latestOperation = n;
-        } else {
-          this.selectCalcPressed = false;
-          if (this.latestOperation === '/') {
-            this.prevValue = (parseFloat(this.prevValue) / parseFloat(this.currentValue))
-              .toString();
-          } else if (this.latestOperation === '-') {
-            this.prevValue = (parseFloat(this.prevValue) - parseFloat(this.currentValue))
-              .toString();
-          } else if (this.latestOperation === '+') {
-            this.prevValue = (parseFloat(this.prevValue) + parseFloat(this.currentValue))
-              .toString();
-          } else if (this.latestOperation === '*') {
-            this.prevValue = (parseFloat(this.prevValue) * parseFloat(this.currentValue))
-              .toString();
-          } else {
-            this.prevValue = parseFloat(this.currentValue).toString();
-          }
-          this.latestOperation = n;
-          this.screen += `${n}`;
-          this.currentValue = '';
-          this.latestButton = n;
-          this.equalsPressed = false;
-          this.dotPressed = false;
-          this.selectVarPressed = false;
-        }
-      }
-
-      if (n === 'ans') {
-        if (this.prevResult !== '' && !([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '.', 'a', 'b', 'c', 'd', 'e',
-          'ans']
-          .includes(this.latestButton))) {
-          if (this.equalsPressed) {
-            this.clear();
-          }
-          if (this.screen === '-') {
-            this.currentValue = (parseFloat(this.prevResult) * -1).toString();
-            this.screen += 'ans';
-            this.latestButton = '-ans';
-            this.minusFirst = false;
-            return;
-          }
-          this.screen += 'ans';
-          this.currentValue = this.prevResult;
-          this.latestButton = n;
-        }
-      }
-
-      if (n === '=') {
-        this.rechenString = this.screen;
-        if (this.selectCalcPressed) {
-          this.screen = this.prevValue;
-          this.selectCalcPressed = false;
-          this.equalsPressed = true;
-          this.dotPressed = false;
-          return;
-        }
-        if (['a', 'b', 'c', 'd', 'e'].includes(this.latestButton) && (this.screen.length <= 2)) {
-          switch (this.latestButton) {
-            case 'a':
-              if (this.screen === '-a') {
-                this.screen = (parseFloat(this.a) * -1).toString();
-              } else {
-                this.screen = this.a;
-              }
-              break;
-            case 'b':
-              if (this.screen === '-b') {
-                this.screen = (parseFloat(this.b) * -1).toString();
-              } else {
-                this.screen = this.b;
-              }
-              break;
-            case 'c':
-              if (this.screen === '-c') {
-                this.screen = (parseFloat(this.c) * -1).toString();
-              } else {
-                this.screen = this.c;
-              }
-              break;
-            case 'd':
-              if (this.screen === '-d') {
-                this.screen = (parseFloat(this.d) * -1).toString();
-              } else {
-                this.screen = this.d;
-              }
-              break;
-            case 'e':
-              if (this.screen === '-e') {
-                this.screen = (parseFloat(this.e) * -1).toString();
-              } else {
-                this.screen = this.e;
-              }
-              break;
-            default:
-              break;
-          }
-        }
-        if (this.latestOperation === '+') {
-          this.screen = (parseFloat(this.prevValue) + parseFloat(this.currentValue)).toString();
-        }
-        if (this.latestOperation === '-') {
-          this.screen = (parseFloat(this.prevValue) - parseFloat(this.currentValue)).toString();
-        }
-        if (this.latestOperation === '*') {
-          this.screen = (parseFloat(this.prevValue) * parseFloat(this.currentValue)).toString();
-        }
-        if (this.latestOperation === '/') {
-          this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
-        }
-        if (this.screen.startsWith('.') && this.screen.length > 1) {
-          this.screen = `0${this.screen}`;
-        }
-        this.equalsPressed = true;
-        this.dotPressed = false;
-        this.latestButton = '=';
-        if (this.screen === '') {
-          return;
-        }
-        if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR' || this.screen === '-') {
-          this.clear();
-          this.screen = 'ERROR';
-        } else if (this.screen === 'ans' || this.screen === '-ans') {
-          if (this.screen === '-ans') {
-            this.screen = (parseFloat(this.prevResult) * -1).toString();
-            this.prevResult = this.screen;
-          } else {
-            this.screen = this.prevResult;
-          }
-          this.post();
-          setTimeout(this.updateHistory, 300);
-        } else {
-          this.prevResult = this.screen;
-          this.post();
-          setTimeout(this.updateHistory, 300);
-        }
-      }
-    },
-
-    clear() {
-      this.prevValue = '';
-      this.currentValue = '';
-      this.latestOperation = '';
-      this.screen = '';
-      this.latestButton = '';
-      this.equalsPressed = true;
-      this.dotPressed = false;
-      this.rechenString = '';
-      this.varPressed = false;
-      this.selectVarPressed = false;
-      this.minusFirst = false;
-    },
-
     post() {
       const today = new Date();
 
@@ -590,7 +599,7 @@ export default {
 
       const data = {
         rechnung: this.rechenString,
-        datum: `${day}.${month}.${today.getFullYear()} ${hours}:${minutes}:${seconds}`,
+        datum: `${day}.${month}.${today.getFullYear()} -- ${hours}:${minutes}:${seconds}`,
         ergebnis: this.screen,
       };
       const endpoint = `${process.env.VUE_APP_BACKEND_BASE_URL}/rechnungen`;

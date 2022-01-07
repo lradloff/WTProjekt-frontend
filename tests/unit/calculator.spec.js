@@ -31,7 +31,6 @@ describe('Testing Calculator.vue', () => {
 
     expect(wrapper.vm.prevResult).toEqual('111.111')
 
-
   })
 
   it('should return right result when subtracting', () => {
@@ -56,7 +55,6 @@ describe('Testing Calculator.vue', () => {
 
     expect(wrapper.vm.prevResult).toEqual('-5.5')
 
-
   })
 
   it('should return right result when multiplying', () => {
@@ -80,7 +78,6 @@ describe('Testing Calculator.vue', () => {
 
     expect(wrapper.vm.prevResult).toEqual('14.4')
 
-
   })
 
   it('should return right result when dividing', () => {
@@ -103,7 +100,6 @@ describe('Testing Calculator.vue', () => {
 
     expect(wrapper.vm.prevResult).toEqual('2')
 
-
   });
 
   it('should reset everything but the last result when pressing "AC"', () => {
@@ -118,17 +114,16 @@ describe('Testing Calculator.vue', () => {
     wrapper.vm.buttonPress('+')
     wrapper.vm.buttonPress(3)
 
-
     expect(wrapper.vm.screen).toEqual('6+3')
     expect(wrapper.vm.currentValue).toEqual('3')
     expect(wrapper.vm.prevValue).toEqual('6')
     expect(wrapper.vm.latestOperation).toEqual('+')
     expect(wrapper.vm.latestButton).toEqual(3)
+    expect(wrapper.vm.prevResult).toEqual('6')
+    expect(wrapper.vm.rechenString).toEqual('30/5')
     expect(wrapper.vm.equalsPressed).toBe(false)
     expect(wrapper.vm.dotPressed).toBe(false)
-    expect(wrapper.vm.rechenString).toEqual('30/5')
     expect(wrapper.vm.selectCalcPressed).toBe(false)
-    expect(wrapper.vm.prevResult).toEqual('6')
 
     wrapper.vm.buttonPress('AC')
 
@@ -137,12 +132,15 @@ describe('Testing Calculator.vue', () => {
     expect(wrapper.vm.prevValue).toEqual('')
     expect(wrapper.vm.latestOperation).toEqual('')
     expect(wrapper.vm.latestButton).toEqual('')
+    expect(wrapper.vm.prevResult).toEqual('6')
+    expect(wrapper.vm.selectCalcResult).toEqual('')
     expect(wrapper.vm.equalsPressed).toBe(true)
     expect(wrapper.vm.dotPressed).toBe(false)
     expect(wrapper.vm.rechenString).toEqual('')
     expect(wrapper.vm.selectCalcPressed).toBe(false)
-    expect(wrapper.vm.prevResult).toEqual('6')
-
+    expect(wrapper.vm.varPressed).toBe(false)
+    expect(wrapper.vm.selectVarPressed).toBe(false)
+    expect(wrapper.vm.minusFirst).toBe(false)
 
   });
 
@@ -227,13 +225,6 @@ describe('Testing Calculator.vue', () => {
 
     expect(wrapper.vm.screen).toEqual('3.68')
 
-
-
-
-
-
-
-
   });
 
   it('should clear the whole history when pressing the delete history button (trashcan)', () => {
@@ -246,13 +237,13 @@ describe('Testing Calculator.vue', () => {
             id: 1,
             rechnung: '10*10+3',
             ergebnis: '103',
-            datum: `05.01.2022`
+            datum: `05.01.2022 -- 13:02:22`
           },
           {
             id: 2,
             rechnung: '3/3+6',
             ergebnis: '7',
-            datum: `02.01.2022`
+            datum: `02.01.2022 -- 23:10:38`
           }
         ]
       })
@@ -264,6 +255,107 @@ describe('Testing Calculator.vue', () => {
     expect(wrapper.vm.rechnungen.length).toEqual(0)
   });
 
+  it('should save number to the selected variable', () => {
+
+    const wrapper = mount(Calculator)
+
+    //a
+    wrapper.vm.buttonPress(1)
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('a')
+
+    //b
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress('*')
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress('=')
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('b')
+
+    //c
+    wrapper.setData({
+        rechnungen: [
+          {
+            id: 821,
+            rechnung: "34*2+2",
+            ergebnis: "70",
+            datum: "07.01.2022 "
+          }
+        ]
+      }
+    )
+    wrapper.vm.selectCalc(821)
+    wrapper.vm.buttonPress('/')
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress('=')
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('c')
+
+    //d
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress(2)
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('d')
+
+    //e
+    wrapper.vm.buttonPress('.')
+    wrapper.vm.buttonPress(3)
+    wrapper.vm.buttonPress(4)
+    wrapper.vm.buttonPress(5)
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('e')
+
+    expect(wrapper.vm.a).toEqual('122')
+    expect(wrapper.vm.b).toEqual('6')
+    expect(wrapper.vm.c).toEqual('35')
+    expect(wrapper.vm.d).toEqual('2222')
+    expect(wrapper.vm.e).toEqual('0.345')
+
+    //save a to c
+    wrapper.vm.selectVar('a')
+    wrapper.vm.buttonPress('var')
+    wrapper.vm.selectVar('c')
+
+    expect(wrapper.vm.a).toEqual('122')
+    expect(wrapper.vm.c).toEqual('122')
+
+  });
+
+  it('should get correct number from a variable', () => {
+
+    const wrapper = mount(Calculator)
+
+    wrapper.vm.a = '1';
+    wrapper.vm.b = '2';
+    wrapper.vm.c = '3.5';
+    wrapper.vm.d = '4';
+    wrapper.vm.e = '5.5';
+
+    wrapper.vm.selectVar('a')
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.selectVar('b')
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('3')
+
+    wrapper.vm.buttonPress('+')
+    wrapper.vm.selectVar('c')
+    wrapper.vm.buttonPress('-')
+    wrapper.vm.selectVar('d')
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('2.5')
+
+    wrapper.vm.selectVar('e')
+    wrapper.vm.buttonPress('=')
+
+    expect(wrapper.vm.screen).toEqual('5.5')
+
+  });
 
 
   it('should return right amount of calculations and their data', () => {
