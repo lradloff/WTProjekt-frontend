@@ -520,4 +520,5 @@ describe('Testing Calculator.vue', () => {
     expect(wrapper.vm.rechnungen[1].datum).toEqual(datum)
 
   });
+
 });
