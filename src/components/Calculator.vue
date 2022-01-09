@@ -167,7 +167,8 @@ export default {
 
       if (n === 'var') {
         if ((this.equalsPressed || this.prevValue === '') && !(this.screen === '')
-          && !(this.screen === '.') && !(this.screen === '-') && !(this.screen === 'ERROR')) {
+          && !(this.screen === '.') && !(this.screen === '-') && !(this.screen === '-.')
+          && !(this.screen === 'ERROR')) {
           if (this.equalsPressed) {
             if (this.prevResult.length > 7) {
               this.screen = `[${this.prevResult.slice(0, 7)}..] Variable auswählen -->`;
@@ -373,7 +374,11 @@ export default {
           this.screen = (parseFloat(this.prevValue) / parseFloat(this.currentValue)).toString();
         }
         if (this.screen.startsWith('.') && this.screen.length > 1) {
-          this.screen = `0${this.screen}`;
+          if (this.screen === '.0') {
+            this.screen = '0';
+          } else {
+            this.screen = `0${this.screen}`;
+          }
         }
         this.equalsPressed = true;
         this.dotPressed = false;
@@ -381,9 +386,11 @@ export default {
         if (this.screen === '') {
           return;
         }
-        if (this.screen === 'NaN' || this.screen === '.' || this.screen === 'ERROR' || this.screen === '-') {
+        if (this.screen === 'NaN' || this.screen === '.' || this.screen === '-.' || this.screen === 'ERROR' || this.screen === '-') {
           this.clear();
           this.screen = 'ERROR';
+        } else if (this.screen === '-0') {
+          this.screen = '0';
         } else if (this.screen === 'ans' || this.screen === '-ans') {
           if (this.screen === '-ans') {
             this.screen = (parseFloat(this.prevResult) * -1).toString();
@@ -446,7 +453,14 @@ export default {
               this.a = this.currentValue;
             }
             if (this.a.startsWith('.')) {
-              this.a = `0${this.a}`;
+              if (this.a === '.0') {
+                this.a = '0';
+              } else {
+                this.a = `0${this.a}`;
+              }
+            }
+            if (this.a === '-0' || this.a === '-.0') {
+              this.a = '0';
             }
             break;
           case 'b':
@@ -456,7 +470,14 @@ export default {
               this.b = this.currentValue;
             }
             if (this.b.startsWith('.')) {
-              this.b = `0${this.b}`;
+              if (this.b === '.0') {
+                this.b = '0';
+              } else {
+                this.b = `0${this.b}`;
+              }
+            }
+            if (this.b === '-0' || this.b === '-.0') {
+              this.b = '0';
             }
             break;
           case 'c':
@@ -466,7 +487,14 @@ export default {
               this.c = this.currentValue;
             }
             if (this.c.startsWith('.')) {
-              this.c = `0${this.c}`;
+              if (this.c === '.0') {
+                this.c = '0';
+              } else {
+                this.c = `0${this.c}`;
+              }
+            }
+            if (this.c === '-0' || this.c === '-.0') {
+              this.c = '0';
             }
             break;
           case 'd':
@@ -476,7 +504,14 @@ export default {
               this.d = this.currentValue;
             }
             if (this.d.startsWith('.')) {
-              this.d = `0${this.d}`;
+              if (this.d === '.0') {
+                this.d = '0';
+              } else {
+                this.d = `0${this.d}`;
+              }
+            }
+            if (this.d === '-0' || this.d === '-.0') {
+              this.d = '0';
             }
             break;
           case 'e':
@@ -486,7 +521,14 @@ export default {
               this.e = this.currentValue;
             }
             if (this.e.startsWith('.')) {
-              this.e = `0${this.e}`;
+              if (this.e === '.0') {
+                this.e = '0';
+              } else {
+                this.e = `0${this.e}`;
+              }
+            }
+            if (this.e === '-0' || this.e === '-.0') {
+              this.e = '0';
             }
             break;
           default:

@@ -20,14 +20,14 @@
           werden.
         </h3>
         <h3 style="margin-top: 50px">
-          Zusätzliche Funktionen sind mit den Knöpfen '⌫', 'ans', 'var' möglich: '⌫' entfernt
-          die zuletzt eingegebene Ziffer der aktuell eingegebenen Zahl, 'ans' beinhaltet das
+          Zusätzliche Funktionen sind mit den Knöpfen '⌫', 'ans', 'var' verfügbar: '⌫' entfernt
+          die letzte Ziffer der aktuell eingegebenen Zahl, 'ans' beinhaltet das
           Ergebnis der letzten Rechnung und 'var' speichert einen Wert in eine auswählbare
           Variable, mit der anschließend gerechnet werden kann.
         </h3>
         <h3 style="margin-top: 50px">
-          Gestaltet wurde dieser Taschenrechner in einer leichten und angenehmen, lavendelfarbenen
-          Farbgebung.
+          Gestaltet wurde dieser Taschenrechner in einer leichten, lavendelfarbenen
+          Farbgebung, um dem Nutzer auch lange Sitzungen so angenehm wie möglich zu machen.
         </h3>
       </div>
 
